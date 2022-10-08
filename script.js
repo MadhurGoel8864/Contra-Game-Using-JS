@@ -6,8 +6,10 @@ canvas.height = window.innerHeight;
 
 let x = 0;
 let y = 0;
+let c = 0;
 let gravity = 1;
 let flag = true;
+let jumpCheck = false;
 
 const groundGravity = 0.5;
 
@@ -16,14 +18,29 @@ function drawPlayer() {
   ctx.fillRect(x, y, 100, 100);
 }
 
+function jump() {
+  c -= 10;
+  y -= gravity;
+  gravity += groundGravity;
+
+  if (c == -300) {
+    c = 0;
+    gravity = 1;
+    jumpCheck = false;
+  }
+}
+
 function update() {
   drawPlayer();
-
-  if (y + gravity + groundGravity + 100 <= canvas.height) {
-    y += gravity;
-    gravity += groundGravity;
-  } else {
-    gravity = 0;
+  if (jumpCheck === true) {
+    jump();
+  } else if (jumpCheck === false) {
+    if (y + gravity + groundGravity + 100 <= canvas.height) {
+      y += gravity;
+      gravity += groundGravity;
+    } else {
+      gravity = 0;
+    }
   }
   if (y + gravity + groundGravity + 100 === canvas.height) {
     flag = true;
@@ -47,7 +64,7 @@ function move(event) {
   }
   if (event.key === "w") {
     if (flag) {
-      y -= 300;
+      jumpCheck = true;
       flag = false;
     }
   }
