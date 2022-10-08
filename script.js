@@ -6,10 +6,9 @@ canvas.height = window.innerHeight;
 
 let x = 0;
 let y = 0;
-let c = 0;
-let gravity = 1;
+let xv = 0;
+let yv = 0;
 let flag = true;
-let jumpCheck = false;
 
 const groundGravity = 0.5;
 
@@ -18,34 +17,44 @@ function drawPlayer() {
   ctx.fillRect(x, y, 100, 100);
 }
 
-function jump() {
-  c -= 10;
-  y -= gravity;
-  gravity += groundGravity;
-
-  if (c == -300) {
-    c = 0;
-    gravity = 1;
-    jumpCheck = false;
-  }
-}
-
 function update() {
   drawPlayer();
-  if (jumpCheck === true) {
-    jump();
-  } else if (jumpCheck === false) {
-    if (y + gravity + groundGravity + 100 <= canvas.height) {
-      y += gravity;
-      gravity += groundGravity;
-    } else {
-      gravity = 0;
-    }
-  }
-  if (y + gravity + groundGravity + 100 === canvas.height) {
+  x += xv;
+  y += yv;
+  yv += groundGravity;
+
+  if (y + yv + 100 <= canvas.height) yv += groundGravity;
+  else {
+    yv = 0;
     flag = true;
   }
 }
+
+function move(event) {
+  if (event.key === "d") {
+    xv = 10;
+  }
+  if (event.key === "a" && x > 0) {
+    xv = -10;
+  }
+  if (event.key === "w") {
+    if (flag) {
+      yv -= 30;
+      flag = false;
+    }
+  }
+}
+function stop(event) {
+  if (event.key === "d") {
+    xv = 0;
+  }
+  if (event.key === "a" && x > 0) {
+    xv = 0;
+  }
+}
+
+addEventListener("keypress", move);
+addEventListener("keyup", stop);
 
 function animation() {
   requestAnimationFrame(animation);
@@ -54,20 +63,3 @@ function animation() {
 }
 
 animation();
-
-function move(event) {
-  if (event.key === "d") {
-    x += 35;
-  }
-  if (event.key === "a" && x > 0) {
-    x -= 35;
-  }
-  if (event.key === "w") {
-    if (flag) {
-      jumpCheck = true;
-      flag = false;
-    }
-  }
-}
-
-addEventListener("keypress", move);
