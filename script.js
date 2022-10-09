@@ -19,14 +19,22 @@ const groundGravity = 0.5;
 const image = new Image();
 image.src = "img/backgroundimg.png";
 
+const player_image = new Image();
+player_image.src = "img/player_movement_sprite.png";
+const player_sprite_width = 25;
+const player_sprite_height = 35;
+
+let framex = 0;
+let framey = 0;
 function drawPlatform() {
   ctx.fillStyle = "blue";
-  ctx.drawImage(image, platX, platY, backWidth * 7, backHeight * 0.94);
+  ctx.drawImage(image, platX, platY, backWidth * 7, backHeight * .94);
 }
 
 function drawPlayer() {
-  ctx.fillStyle = "yellow";
-  ctx.fillRect(x, y, 100, 100);
+  ctx.drawImage(player_image, framex * player_sprite_width, 114, player_sprite_width, player_sprite_height, x, y, 60, 60);
+  // ctx.fillStyle = "yellow";
+  // ctx.fillRect(x, y, 100, 100);
 }
 
 function update() {
@@ -35,7 +43,7 @@ function update() {
   y += yv;
   yv += groundGravity;
 
-  if (y + yv + 100 <= canvas.height / 2 + 35) yv += groundGravity;
+  if (y + yv + 100 <= canvas.height / 2 + 75) yv += groundGravity;
   else {
     yv = 0;
     flag = true;
@@ -44,10 +52,14 @@ function update() {
 
 function move(event) {
   if (event.key === "d" && x < 400) {
-    xv = 10;
+    if (framex < 2)
+      framex++;
+    else
+      framex = 0;
+    xv = 2;
   }
   if (event.key === "a" && x > 100) {
-    xv = -10;
+    xv = -2;
   }
   if (event.key === "w") {
     if (flag) {
