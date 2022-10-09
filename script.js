@@ -1,4 +1,3 @@
-
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -28,12 +27,21 @@ const player_sprite_height = 35;
 let framex = 0;
 let framey = 0;
 function drawPlatform() {
-  ctx.fillStyle = "blue";
-  ctx.drawImage(image, platX, platY, backWidth * 7, backHeight * .94);
+  ctx.drawImage(image, platX, platY, backWidth * 7, backHeight * 0.94);
 }
 
 function drawPlayer() {
-  ctx.drawImage(player_image, framex * player_sprite_width, 114, player_sprite_width, player_sprite_height, x, y, 60, 60);
+  ctx.drawImage(
+    player_image,
+    framex * player_sprite_width,
+    114,
+    player_sprite_width,
+    player_sprite_height,
+    x,
+    y,
+    90,
+    90
+  );
   // ctx.fillStyle = "yellow";
   // ctx.fillRect(x, y, 100, 100);
 }
@@ -52,11 +60,9 @@ function update() {
 }
 
 function move(event) {
-  if (event.key === "d" && x < 400) {
-    if (framex < 2)
-      framex++;
-    else
-      framex = 0;
+  if (event.key === "d") {
+    if (framex < 2) framex++;
+    else framex = 0;
     xv = 2;
   }
   if (event.key === "a" && x > 100) {
@@ -87,28 +93,15 @@ function animation() {
   drawPlatform();
   update();
 
-  if (
-    y + 100 <= platY &&
-    y + 100 + yv >= platY &&
-    x + 100 >= platX &&
-    x <= platX + 400
-  ) {
-    yv = 0;
-  }
   if (x > 800 || x < 100) {
     xv = 0;
   }
   if (x > 800) {
-    platX -= 10;
+    platX -= 2;
   }
   if (x < 100) {
-    platX += 10;
+    platX += 2;
   }
 }
 
 animation();
-
-
-
-
-
