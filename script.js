@@ -7,13 +7,14 @@ let ex = 700;
 let ex1 = 1500;
 let ex2 = 1100;
 let ey = canvas.height / 2 - 10;
-let x = 200;
-let y = 100;
+let playerX = 200;
+let playerY = 0;
 let xv = 0;
 let yv = 0;
 let platX = 0;
 let platY = 100;
 let flag = true;
+let ground = canvas.height;
 const backHeight = window.innerHeight;
 const backWidth = window.innerWidth;
 shiftTrack = 0;
@@ -230,8 +231,8 @@ function drawPlayer() {
       114,
       player_sprite_width,
       player_sprite_height,
-      x,
-      y,
+      playerX,
+      playerY,
       80,
       80
     );
@@ -242,8 +243,8 @@ function drawPlayer() {
       1,
       reversed_player_sprite_width,
       reversed_player_sprite_height,
-      x,
-      y,
+      playerX,
+      playerY,
       80,
       80
     );
@@ -254,22 +255,42 @@ function create_fireball() {}
 
 function update() {
   drawPlatform();
-  drawPlayer();
-  x += xv;
-  y += yv;
-  yv += groundGravity;
-  if (x >= 550) {
-    x = 549;
+  playerX += xv;
+  playerY += yv;
+  if (playerX >= 550) {
+    playerX = 549;
     moveForward();
   }
-  if (x <= 110) {
-    x = 110;
+  if (playerX <= 110) {
+    playerX = 110;
   }
-  if (y + yv + 100 <= canvas.height / 2 + 85) yv += groundGravity;
-  else {
+  let flag22 = false;
+  for (let i = 0; i < track.length; i++) {
+    for (let j = 0; j < track[i].length; j++) {
+      if (track[i][j] === 1) {
+        let trackPosition = { x: j * 60, y: i * 60 };
+        if (
+          playerX + 80 >= trackPosition.x &&
+          playerX <= trackPosition.x + 60 &&
+          playerY + 80 <= trackPosition.y &&
+          playerY + 80 >= trackPosition.y - 60
+        ) {
+          flag22 = true;
+          console.log(flag22);
+          ground = trackPosition.y;
+        }
+      }
+      if (!flag22) ground = canvas.height;
+    }
+  }
+  if (playerY + 100 >= ground) {
     yv = 0;
+    playerY = ground - 100;
     flag = true;
+  } else {
+    yv += groundGravity;
   }
+  drawPlayer();
 }
 
 function move(event) {
