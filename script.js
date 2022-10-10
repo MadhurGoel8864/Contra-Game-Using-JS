@@ -54,7 +54,7 @@ let cnt = 0;
 let fireball_x = [];
 let fireball_y = [];
 let face_gun = [];
-let enemyX = 420;
+let enemyX = 820;
 let enemyY = 0;
 let trackImage = {
   road: { sx: 100, sy: 100, sw: 60, sh: 60 },
@@ -306,6 +306,9 @@ function create_fireball() {
     );
     if (face_gun[i] == 1) fireball_x[i] += 6;
     else fireball_x[i] -= 6;
+    if (fireball_x[i] === enemyX) {
+      enemyDead = true;
+    }
   }
 }
 
@@ -327,7 +330,6 @@ function update() {
   else yv += calculateGroundLevel(playerX, playerY);
   if (calculateGroundLevel(enemyX, enemyY) === 0) enemyYVelo = 0;
   else enemyYVelo += calculateGroundLevel(enemyX, enemyY);
-  console.log(enemyX);
   if (enemyX < 50) {
     enemyXVelo = 0;
   } else if (enemyYVelo === 0) {
@@ -394,26 +396,29 @@ let enemyPosition = {
 let shiftRightEnemy = 0;
 let shiftLeftEnemy = 0;
 let delayEnemySprite = 0;
+let enemyDead = false;
 
 function drawEnemy() {
-  ctx.drawImage(
-    reverseEnemy,
-    enemyPosition.sx + shiftLeftEnemy,
-    enemyPosition.sy,
-    enemyPosition.sw,
-    enemyPosition.sh,
-    enemyX,
-    enemyY,
-    80,
-    80
-  );
-  if (delayEnemySprite % 10 === 0) {
-    shiftLeftEnemy -= enemyPosition.sw;
-    if (shiftLeftEnemy < -enemyPosition.sw * enemyPosition.cols) {
-      shiftLeftEnemy = 0;
+  if (!enemyDead) {
+    ctx.drawImage(
+      reverseEnemy,
+      enemyPosition.sx + shiftLeftEnemy,
+      enemyPosition.sy,
+      enemyPosition.sw,
+      enemyPosition.sh,
+      enemyX,
+      enemyY,
+      80,
+      80
+    );
+    if (delayEnemySprite % 10 === 0) {
+      shiftLeftEnemy -= enemyPosition.sw;
+      if (shiftLeftEnemy < -enemyPosition.sw * enemyPosition.cols) {
+        shiftLeftEnemy = 0;
+      }
     }
+    delayEnemySprite++;
   }
-  delayEnemySprite++;
 }
 
 addEventListener("keydown", move);
