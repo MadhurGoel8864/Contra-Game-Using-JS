@@ -29,6 +29,8 @@ const player_image = new Image();
 player_image.src = "img/player_movement_sprite.png";
 const reversed_image = new Image();
 reversed_image.src = " img/reverse_running.png";
+const fireball_image = new Image();
+fireball_image.src = "img/fire_ball.png";
 const player_sprite_width = 25;
 const player_sprite_height = 35;
 const reversed_player_sprite_width = 26;
@@ -40,7 +42,9 @@ let framey = 0;
 let facing = 1;
 let rotate_angle = 180;
 let cnt = 0;
-
+let fireball_x = [];
+let fireball_y = [];
+let face_gun = [];
 let trackImage = {
   road: { sx: 100, sy: 100, sw: 60, sh: 60 },
   grass: { sx: 100, sy: 65, sw: 70, sh: 30 },
@@ -225,12 +229,7 @@ function drawPlatform() {
 
 function drawPlayer() {
   if (facing == 1) {
-    ctx.drawImage(
-      player_image,
-      framex * player_sprite_width,
-      114,
-      player_sprite_width,
-      player_sprite_height,
+    ctx.drawImage(player_image, framex * player_sprite_width, 114, player_sprite_width, player_sprite_height,
       playerX,
       playerY,
       80,
@@ -251,10 +250,19 @@ function drawPlayer() {
   }
 }
 
-function create_fireball() {}
+function create_fireball() {
+  for (let i = 0; i < fireball_x.length; ++i) {
+    ctx.drawImage(fireball_image, fireball_x[i] + 28, fireball_y[i] + 25, 15, 15);
+    if (face_gun[i] == 1)
+      fireball_x[i] += 6;
+    else
+      fireball_x[i] -= 6
+  }
+}
 
 function update() {
   drawPlatform();
+  create_fireball();
   playerX += xv;
   playerY += yv;
   if (playerX >= 550) {
@@ -308,9 +316,14 @@ function move(event) {
   }
   if (event.key === "w") {
     if (flag) {
-      yv -= 20;
+      yv -= 15;
       flag = false;
     }
+  }
+  if (event.key === "q") {
+    fireball_x.push(playerX);
+    fireball_y.push(playerY);
+    face_gun.push(facing);
   }
 }
 function stop(event) {
