@@ -6,8 +6,13 @@
 
 body {
   background-color: black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+}
+#myCanvas {
+  margin-left: 15%;
+  margin-bottom: 2%;
+}
+.logo {
+  height: 140px;
+  width: 400px;
+  margin-left: 35%;
 }

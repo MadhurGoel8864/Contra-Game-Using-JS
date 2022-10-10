@@ -76,7 +76,7 @@ track = [
     0, 0, 0, 0, 0, 0, 0, 0,
   ],
   [
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0,
   ],
@@ -267,7 +267,7 @@ function update() {
   let flag22 = false;
   for (let i = 0; i < track.length; i++) {
     for (let j = 0; j < track[i].length; j++) {
-      if (track[i][j] === 1) {
+      if (track[i][j] == 1) {
         let trackPosition = { x: j * 60, y: i * 60 };
         if (
           playerX + 80 >= trackPosition.x &&
