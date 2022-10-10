@@ -40,6 +40,8 @@ const reverse_laying_image = new Image();
 reverse_laying_image.src = "img/reverse_laydown.png";
 const reverseEnemy = new Image();
 reverseEnemy.src = "img/playerreverse.png";
+const blastImage = new Image();
+blastImage.src = "img/blastimage.png";
 const player_sprite_width = 25;
 const player_sprite_height = 35;
 const reversed_player_sprite_width = 26;
@@ -239,36 +241,44 @@ function drawPlatform() {
     );
   }
 }
-
+let blastPlayer = true;
+let playerDead = false;
 function drawPlayer() {
-  if (laying == 1 && facing == 1) {
-    ctx.drawImage(laying_img, playerX, playerY, 80, 80);
-  } else if (laying == 1 && facing == 0) {
-    ctx.drawImage(reverse_laying_image, playerX, playerY, 80, 80);
-  } else if (facing == 1) {
-    ctx.drawImage(
-      player_image,
-      framex * player_sprite_width,
-      114,
-      player_sprite_width,
-      player_sprite_height,
-      playerX,
-      playerY,
-      80,
-      80
-    );
-  } else if (facing == 0) {
-    ctx.drawImage(
-      reversed_image,
-      framex * reversed_player_sprite_width,
-      1,
-      reversed_player_sprite_width,
-      reversed_player_sprite_height,
-      playerX,
-      playerY,
-      80,
-      80
-    );
+  if (!playerDead) {
+    if (laying == 1 && facing == 1) {
+      ctx.drawImage(laying_img, playerX, playerY, 80, 80);
+    } else if (laying == 1 && facing == 0) {
+      ctx.drawImage(reverse_laying_image, playerX, playerY, 80, 80);
+    } else if (facing == 1) {
+      ctx.drawImage(
+        player_image,
+        framex * player_sprite_width,
+        114,
+        player_sprite_width,
+        player_sprite_height,
+        playerX,
+        playerY,
+        80,
+        80
+      );
+    } else if (facing == 0) {
+      ctx.drawImage(
+        reversed_image,
+        framex * reversed_player_sprite_width,
+        1,
+        reversed_player_sprite_width,
+        reversed_player_sprite_height,
+        playerX,
+        playerY,
+        80,
+        80
+      );
+    }
+  } else {
+    if (blastPlayer) {
+      ctx.drawImage(blastImage, playerX, playerY, 50, 50);
+      blastPlayer = false;
+    }
   }
 }
 function calculateGroundLevel(playerX, playerY) {
@@ -325,7 +335,7 @@ function createEnemyFireBall() {
     );
     enemyFireBallx[i] -= 6;
     if (enemyFireBallx[i] === playerX) {
-      console.log("game over");
+      playerDead = true;
     }
   }
 }
@@ -421,7 +431,7 @@ let shiftRightEnemy = 0;
 let shiftLeftEnemy = 0;
 let delayEnemySprite = 0;
 let enemyDead = false;
-
+let blastFlag = true;
 function drawEnemy() {
   if (!enemyDead) {
     ctx.drawImage(
@@ -442,6 +452,11 @@ function drawEnemy() {
       }
     }
     delayEnemySprite++;
+  } else {
+    if (blastFlag) {
+      ctx.drawImage(blastImage, enemyX, enemyY, 50, 50);
+      blastFlag = false;
+    }
   }
 }
 
