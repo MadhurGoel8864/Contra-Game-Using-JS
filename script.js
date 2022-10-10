@@ -53,6 +53,9 @@ let rotate_angle = 180;
 let cnt = 0;
 let fireball_x = [];
 let fireball_y = [];
+let enemyFireBallx = [];
+let enemyFireBally = [];
+let enemyFaceGun = [];
 let face_gun = [];
 let enemyX = 820;
 let enemyY = 0;
@@ -311,7 +314,22 @@ function create_fireball() {
     }
   }
 }
-
+function createEnemyFireBall() {
+  for (let i = 0; i < enemyFireBallx.length; ++i) {
+    ctx.drawImage(
+      fireball_image,
+      enemyFireBallx[i] + 28,
+      enemyFireBally[i] + 32,
+      15,
+      15
+    );
+    enemyFireBallx[i] -= 6;
+    if (enemyFireBallx[i] === playerX) {
+      console.log("game over");
+    }
+  }
+}
+let counter = 0;
 function update() {
   drawPlatform();
   create_fireball();
@@ -333,6 +351,12 @@ function update() {
   if (enemyX < 50) {
     enemyXVelo = 0;
   } else if (enemyYVelo === 0) {
+    if (counter % 55 === 0) {
+      enemyFireBallx.push(enemyX);
+      enemyFireBally.push(enemyY);
+    }
+    counter++;
+    createEnemyFireBall();
     enemyXVelo = -2;
   } else {
     enemyXVelo = 0;
