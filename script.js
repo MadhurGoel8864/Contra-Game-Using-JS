@@ -16,6 +16,8 @@ let platY = 100;
 let flag = true;
 let ground = canvas.height;
 let laying = 0;
+let enemyXVelo = 0;
+let enemyYVelo = 0;
 const backHeight = window.innerHeight;
 const backWidth = window.innerWidth;
 shiftTrack = 0;
@@ -36,6 +38,8 @@ const laying_img = new Image();
 laying_img.src = "img/laydown.png";
 const reverse_laying_image = new Image();
 reverse_laying_image.src = "img/reverse_laydown.png";
+const reverseEnemy = new Image();
+reverseEnemy.src = "img/playerreverse.png";
 const player_sprite_width = 25;
 const player_sprite_height = 35;
 const reversed_player_sprite_width = 26;
@@ -50,6 +54,8 @@ let cnt = 0;
 let fireball_x = [];
 let fireball_y = [];
 let face_gun = [];
+let enemyX = 420;
+let enemyY = 0;
 let trackImage = {
   road: { sx: 100, sy: 100, sw: 60, sh: 60 },
   grass: { sx: 100, sy: 65, sw: 70, sh: 30 },
@@ -263,32 +269,7 @@ function drawPlayer() {
     );
   }
 }
-function create_fireball() {
-  for (let i = 0; i < fireball_x.length; ++i) {
-    ctx.drawImage(
-      fireball_image,
-      fireball_x[i] + 28,
-      fireball_y[i] + 32,
-      15,
-      15
-    );
-    if (face_gun[i] == 1) fireball_x[i] += 6;
-    else fireball_x[i] -= 6;
-  }
-}
-
-function update() {
-  drawPlatform();
-  create_fireball();
-  playerX += xv;
-  playerY += yv;
-  if (playerX >= 550) {
-    playerX = 549;
-    moveForward();
-  }
-  if (playerX <= 110) {
-    playerX = 110;
-  }
+function calculateGroundLevel(playerX, playerY) {
   let flag22 = false;
   for (let i = 0; i < track.length; i++) {
     for (let j = 0; j < track[i].length; j++) {
@@ -309,13 +290,47 @@ function update() {
     }
   }
   if (playerY + 100 >= ground) {
-    yv = 0;
+    return 0;
     playerY = ground - 100;
     flag = true;
   } else {
-    yv += groundGravity;
+    return groundGravity;
   }
+}
+function create_fireball() {
+  for (let i = 0; i < fireball_x.length; ++i) {
+    ctx.drawImage(
+      fireball_image,
+      fireball_x[i] + 28,
+      fireball_y[i] + 32,
+      15,
+      15
+    );
+    if (face_gun[i] == 1) fireball_x[i] += 6;
+    else fireball_x[i] -= 6;
+  }
+}
+
+function update() {
+  drawPlatform();
+  create_fireball();
+  playerX += xv;
+  playerY += yv;
+  enemyX += enemyXVelo;
+  enemyY += enemyYVelo;
+  if (playerX >= 550) {
+    playerX = 549;
+    moveForward();
+  }
+  if (playerX <= 110) {
+    playerX = 110;
+  }
+  if (calculateGroundLevel(playerX, playerY) === 0) yv = 0;
+  else yv += calculateGroundLevel(playerX, playerY);
+  if (calculateGroundLevel(enemyX, enemyY) === 0) enemyYVelo = 0;
+  else enemyYVelo += calculateGroundLevel(enemyX, enemyY);
   drawPlayer();
+  drawEnemy();
 }
 
 function move(event) {
@@ -358,6 +373,32 @@ function stop(event) {
   if (event.key === "a") {
     xv = 0;
   }
+}
+
+let enemyPosition = {
+  sx: 190,
+  sy: 43,
+  sh: 36,
+  sw: 19,
+  dh: 80,
+  dw: 50,
+  cols: 5,
+};
+let shiftRightEnemy = 0;
+let shiftLeftEnemy = 0;
+
+function drawEnemy() {
+  ctx.drawImage(
+    reverseEnemy,
+    enemyPosition.sx,
+    enemyPosition.sy,
+    enemyPosition.sw,
+    enemyPosition.sh,
+    enemyX,
+    enemyY,
+    80,
+    80
+  );
 }
 
 addEventListener("keydown", move);
