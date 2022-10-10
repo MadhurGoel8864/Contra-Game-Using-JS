@@ -135,7 +135,6 @@ track = [
 function moveForward() {
   for (let y = 0; y < this.track.length; y++) {
     if (shiftTrack >= 60) {
-      console.log();
       track[y].shift();
     }
   }
@@ -282,7 +281,6 @@ function calculateGroundLevel(playerX, playerY) {
           playerY + 80 >= trackPosition.y - 60
         ) {
           flag22 = true;
-          console.log(flag22);
           ground = trackPosition.y;
         }
       }
@@ -290,9 +288,9 @@ function calculateGroundLevel(playerX, playerY) {
     }
   }
   if (playerY + 100 >= ground) {
-    return 0;
     playerY = ground - 100;
     flag = true;
+    return 0;
   } else {
     return groundGravity;
   }
@@ -329,6 +327,15 @@ function update() {
   else yv += calculateGroundLevel(playerX, playerY);
   if (calculateGroundLevel(enemyX, enemyY) === 0) enemyYVelo = 0;
   else enemyYVelo += calculateGroundLevel(enemyX, enemyY);
+  console.log(enemyX);
+  if (enemyX < 50) {
+    enemyXVelo = 0;
+  } else if (enemyYVelo === 0) {
+    enemyXVelo = -2;
+  } else {
+    enemyXVelo = 0;
+  }
+
   drawPlayer();
   drawEnemy();
 }
@@ -386,11 +393,12 @@ let enemyPosition = {
 };
 let shiftRightEnemy = 0;
 let shiftLeftEnemy = 0;
+let delayEnemySprite = 0;
 
 function drawEnemy() {
   ctx.drawImage(
     reverseEnemy,
-    enemyPosition.sx,
+    enemyPosition.sx + shiftLeftEnemy,
     enemyPosition.sy,
     enemyPosition.sw,
     enemyPosition.sh,
@@ -399,6 +407,13 @@ function drawEnemy() {
     80,
     80
   );
+  if (delayEnemySprite % 10 === 0) {
+    shiftLeftEnemy -= enemyPosition.sw;
+    if (shiftLeftEnemy < -enemyPosition.sw * enemyPosition.cols) {
+      shiftLeftEnemy = 0;
+    }
+  }
+  delayEnemySprite++;
 }
 
 addEventListener("keydown", move);
