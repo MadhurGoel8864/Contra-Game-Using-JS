@@ -321,9 +321,6 @@ function update() {
 }
 
 function move(event) {
-  if (event.key === "s") {
-    laying = 1;
-  }
   if (event.key === "d") {
     if (framex < 2) framex++;
     else framex = 0;
@@ -348,6 +345,13 @@ function move(event) {
 
 }
 function move1(event) {
+  if (event.key === "s") {
+    if (laying == 0)
+      laying = 1;
+    else {
+      laying = 0;
+    }
+  }
   if (event.key === "q") {
     fireball_x.push(playerX);
     fireball_y.push(playerY);
