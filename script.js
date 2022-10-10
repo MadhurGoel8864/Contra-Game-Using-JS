@@ -50,6 +50,7 @@ let cnt = 0;
 let fireball_x = [];
 let fireball_y = [];
 let face_gun = [];
+let background_audio = new Audio("audios/background_music.mp3");
 let trackImage = {
   road: { sx: 100, sy: 100, sw: 60, sh: 60 },
   grass: { sx: 100, sy: 65, sw: 70, sh: 30 },
@@ -129,7 +130,7 @@ track = [
 function moveForward() {
   for (let y = 0; y < this.track.length; y++) {
     if (shiftTrack >= 60) {
-      console.log();
+      // console.log();
       track[y].shift();
     }
   }
@@ -319,8 +320,8 @@ function update() {
   }
   drawPlayer();
 }
-
 function move(event) {
+  background_audio.play();
   if (event.key === "d") {
     if (framex < 2) framex++;
     else framex = 0;
@@ -342,7 +343,6 @@ function move(event) {
     }
     laying = 0;
   }
-
 }
 function move1(event) {
   if (event.key === "s") {
@@ -353,6 +353,8 @@ function move1(event) {
     }
   }
   if (event.key === "q") {
+    let fire_audio = new Audio("audios/gun_sound.mp3");
+    fire_audio.play();
     fireball_x.push(playerX);
     fireball_y.push(playerY);
     face_gun.push(facing);
