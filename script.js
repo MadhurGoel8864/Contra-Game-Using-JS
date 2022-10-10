@@ -17,7 +17,7 @@ let flag = true;
 const backHeight = window.innerHeight;
 const backWidth = window.innerWidth;
 shiftTrack = 0;
-shiftTrackBy = 6;
+shiftTrackBy = 2;
 
 const groundGravity = 0.5;
 
@@ -274,15 +274,16 @@ function update() {
 
 function move(event) {
   if (event.key === "d") {
+    if (framex < 2) framex++;
+    else framex = 0;
     facing = 1;
-
-    xv = 3;
+    xv = 2;
   }
   if (event.key === "a") {
     if (framex < 2) framex++;
     else framex = 0;
     facing = 0;
-    xv = -3;
+    xv = -2;
   }
   if (event.key === "w") {
     if (flag) {
