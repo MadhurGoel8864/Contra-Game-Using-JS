@@ -15,6 +15,7 @@ let platX = 0;
 let platY = 100;
 let flag = true;
 let ground = canvas.height;
+let laying = 0;
 const backHeight = window.innerHeight;
 const backWidth = window.innerWidth;
 shiftTrack = 0;
@@ -29,6 +30,12 @@ const player_image = new Image();
 player_image.src = "img/player_movement_sprite.png";
 const reversed_image = new Image();
 reversed_image.src = " img/reverse_running.png";
+const fireball_image = new Image();
+fireball_image.src = "img/fire_ball.png";
+const laying_img = new Image();
+laying_img.src = "img/laydown.png";
+const reverse_laying_image = new Image();
+reverse_laying_image.src = "img/reverse_laydown.png";
 const player_sprite_width = 25;
 const player_sprite_height = 35;
 const reversed_player_sprite_width = 26;
@@ -40,7 +47,9 @@ let framey = 0;
 let facing = 1;
 let rotate_angle = 180;
 let cnt = 0;
-
+let fireball_x = [];
+let fireball_y = [];
+let face_gun = [];
 let trackImage = {
   road: { sx: 100, sy: 100, sw: 60, sh: 60 },
   grass: { sx: 100, sy: 65, sw: 70, sh: 30 },
@@ -76,19 +85,19 @@ track = [
     0, 0, 0, 0, 0, 0, 0, 0,
   ],
   [
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     0, 0, 0, 0, 0, 0, 0, 0,
   ],
   [
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    2, 2, 2, 2, 2, 2, 2, 2,
-  ],
-  [
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 4, 4, 4, 4, 5, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1,
+  ],
+  [
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4, 5, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 2,
   ],
   [
     9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9,
@@ -144,14 +153,14 @@ function drawPlatform() {
           case 1: {
             drawTrack({
               trackPosition,
-              trackDetail: { image: "background", trackSource: "road" },
+              trackDetail: { image: "background", trackSource: "grass" },
             });
             break;
           }
           case 2: {
             drawTrack({
               trackPosition,
-              trackDetail: { image: "background", trackSource: "grass" },
+              trackDetail: { image: "background", trackSource: "road" },
             });
             break;
           }
@@ -224,7 +233,11 @@ function drawPlatform() {
 }
 
 function drawPlayer() {
-  if (facing == 1) {
+  if (laying == 1 && facing == 1) {
+    ctx.drawImage(laying_img, playerX, playerY, 80, 80);
+  } else if (laying == 1 && facing == 0) {
+    ctx.drawImage(reverse_laying_image, playerX, playerY, 80, 80);
+  } else if (facing == 1) {
     ctx.drawImage(
       player_image,
       framex * player_sprite_width,
@@ -250,11 +263,23 @@ function drawPlayer() {
     );
   }
 }
-
-function create_fireball() {}
+function create_fireball() {
+  for (let i = 0; i < fireball_x.length; ++i) {
+    ctx.drawImage(
+      fireball_image,
+      fireball_x[i] + 28,
+      fireball_y[i] + 32,
+      15,
+      15
+    );
+    if (face_gun[i] == 1) fireball_x[i] += 6;
+    else fireball_x[i] -= 6;
+  }
+}
 
 function update() {
   drawPlatform();
+  create_fireball();
   playerX += xv;
   playerY += yv;
   if (playerX >= 550) {
@@ -267,7 +292,7 @@ function update() {
   let flag22 = false;
   for (let i = 0; i < track.length; i++) {
     for (let j = 0; j < track[i].length; j++) {
-      if (track[i][j] == 1) {
+      if (track[i][j] > 1) {
         let trackPosition = { x: j * 60, y: i * 60 };
         if (
           playerX + 80 >= trackPosition.x &&
@@ -294,23 +319,36 @@ function update() {
 }
 
 function move(event) {
+  if (event.key === "s") {
+    laying = 1;
+  }
   if (event.key === "d") {
     if (framex < 2) framex++;
     else framex = 0;
     facing = 1;
     xv = 2;
+    laying = 0;
   }
   if (event.key === "a") {
     if (framex < 2) framex++;
     else framex = 0;
     facing = 0;
     xv = -2;
+    laying = 0;
   }
   if (event.key === "w") {
     if (flag) {
-      yv -= 20;
+      yv -= 15;
       flag = false;
     }
+    laying = 0;
+  }
+}
+function move1(event) {
+  if (event.key === "q") {
+    fireball_x.push(playerX);
+    fireball_y.push(playerY);
+    face_gun.push(facing);
   }
 }
 function stop(event) {
@@ -323,6 +361,7 @@ function stop(event) {
 }
 
 addEventListener("keydown", move);
+addEventListener("keyup", move1);
 addEventListener("keyup", stop);
 
 function animation() {
