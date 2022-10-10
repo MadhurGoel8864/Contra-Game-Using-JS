@@ -1,3 +1,13 @@
+let starting = document.getElementById("start_btn");
+starting.addEventListener('click', change_image);
+function change_image() {
+  let background_audio = new Audio("audios/background_music.mp3");
+  let division = document.getElementById("options");
+  division.style.display = "none";
+  let canva = document.getElementById("myCanvas");
+  canva.style.display = "flex";
+  background_audio.play();
+}
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -50,7 +60,6 @@ let cnt = 0;
 let fireball_x = [];
 let fireball_y = [];
 let face_gun = [];
-let background_audio = new Audio("audios/background_music.mp3");
 let trackImage = {
   road: { sx: 100, sy: 100, sw: 60, sh: 60 },
   grass: { sx: 100, sy: 65, sw: 70, sh: 30 },
@@ -130,7 +139,6 @@ track = [
 function moveForward() {
   for (let y = 0; y < this.track.length; y++) {
     if (shiftTrack >= 60) {
-      // console.log();
       track[y].shift();
     }
   }
@@ -321,7 +329,6 @@ function update() {
   drawPlayer();
 }
 function move(event) {
-  background_audio.play();
   if (event.key === "d") {
     if (framex < 2) framex++;
     else framex = 0;
