@@ -247,9 +247,11 @@ let startMoving = false;
 let blastPlayer = true;
 let playerDead = false;
 let playerShiftLeft = 0;
+let playerShiftRight = 0;
 let playerCounter = 0;
 let player = {
   running: { sx: 0, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 },
+  runningReverse: { sx: 397, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 },
 };
 function drawPlayer() {
   if (!playerDead) {
@@ -258,17 +260,6 @@ function drawPlayer() {
     } else if (laying == 1 && facing == 0) {
       ctx.drawImage(reverse_laying_image, playerX, playerY, 80, 80);
     } else if (facing == 1) {
-      // ctx.drawImage(
-      //   player_image,
-      //   framex * player_sprite_width,
-      //   114,
-      //   player_sprite_width,
-      //   player_sprite_height,
-      //   playerX,
-      //   playerY,
-      //   80,
-      //   80
-      // );
       if (startMoving === true) {
         if (playerCounter % 10 === 0) {
           playerShiftLeft += player.running.sw;
@@ -290,17 +281,29 @@ function drawPlayer() {
       );
       playerCounter++;
     } else if (facing == 0) {
+      if (startMoving === true) {
+        if (playerCounter % 10 === 0) {
+          playerShiftRight += player.runningReverse.sw;
+          if (
+            playerShiftRight >=
+            player.runningReverse.sw * player.runningReverse.cols
+          ) {
+            playerShiftRight = 0;
+          }
+        }
+      }
       ctx.drawImage(
-        reversed_image,
-        framex * reversed_player_sprite_width,
-        1,
-        reversed_player_sprite_width,
-        reversed_player_sprite_height,
+        reverseEnemy,
+        player.runningReverse.sx - playerShiftRight,
+        player.runningReverse.sy,
+        player.runningReverse.sw,
+        player.runningReverse.sh,
         playerX,
         playerY,
-        80,
-        80
+        50,
+        100
       );
+      playerCounter++;
     }
   } else if (playerDead) {
     if (blastPlayer) {
@@ -443,6 +446,7 @@ function move(event) {
   if (event.key === "a") {
     if (framex < 2) framex++;
     else framex = 0;
+    startMoving = true;
     facing = 0;
     xv = -2;
     laying = 0;
@@ -468,6 +472,7 @@ function stop(event) {
     xv = 0;
   }
   if (event.key === "a") {
+    startMoving = false;
     xv = 0;
   }
 }
