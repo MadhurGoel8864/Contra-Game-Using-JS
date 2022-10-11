@@ -18,6 +18,7 @@ let ground = canvas.height;
 let laying = 0;
 let enemyXVelo = 0;
 let enemyYVelo = 0;
+let onWater = false;
 const backHeight = window.innerHeight;
 const backWidth = window.innerWidth;
 shiftTrack = 0;
@@ -242,8 +243,14 @@ function drawPlatform() {
     );
   }
 }
+let startMoving = false;
 let blastPlayer = true;
 let playerDead = false;
+let playerShiftLeft = 0;
+let playerCounter = 0;
+let player = {
+  running: { sx: 0, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 },
+};
 function drawPlayer() {
   if (!playerDead) {
     if (laying == 1 && facing == 1) {
@@ -251,17 +258,37 @@ function drawPlayer() {
     } else if (laying == 1 && facing == 0) {
       ctx.drawImage(reverse_laying_image, playerX, playerY, 80, 80);
     } else if (facing == 1) {
+      // ctx.drawImage(
+      //   player_image,
+      //   framex * player_sprite_width,
+      //   114,
+      //   player_sprite_width,
+      //   player_sprite_height,
+      //   playerX,
+      //   playerY,
+      //   80,
+      //   80
+      // );
+      if (startMoving === true) {
+        if (playerCounter % 10 === 0) {
+          playerShiftLeft += player.running.sw;
+          if (playerShiftLeft >= player.running.sw * player.running.cols) {
+            playerShiftLeft = 0;
+          }
+        }
+      }
       ctx.drawImage(
         player_image,
-        framex * player_sprite_width,
-        114,
-        player_sprite_width,
-        player_sprite_height,
+        player.running.sx + playerShiftLeft,
+        player.running.sy,
+        player.running.sw,
+        player.running.sh,
         playerX,
         playerY,
-        80,
-        80
+        50,
+        100
       );
+      playerCounter++;
     } else if (facing == 0) {
       ctx.drawImage(
         reversed_image,
@@ -275,7 +302,7 @@ function drawPlayer() {
         80
       );
     }
-  } else {
+  } else if (playerDead) {
     if (blastPlayer) {
       ctx.drawImage(blastImage, playerX, playerY, 50, 50);
       blastPlayer = false;
@@ -295,6 +322,7 @@ function blastBridge(playerX, playerY) {
           playerY + 80 >= trackPosition.y - 30
         ) {
           track[i][j] = 0;
+          onWater = true;
           ctx.drawImage(blastImage, trackPosition.x, trackPosition.y, 50, 50);
         }
       }
@@ -407,6 +435,7 @@ function move(event) {
   if (event.key === "d") {
     if (framex < 2) framex++;
     else framex = 0;
+    startMoving = true;
     facing = 1;
     xv = 2;
     laying = 0;
@@ -435,6 +464,7 @@ function move1(event) {
 }
 function stop(event) {
   if (event.key === "d") {
+    startMoving = false;
     xv = 0;
   }
   if (event.key === "a") {
