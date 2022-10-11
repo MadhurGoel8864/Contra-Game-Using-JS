@@ -11,6 +11,9 @@ body {
 
 #myCanvas {
   display: none;
+  justify-content: center;
+  align-items: center;
+  margin-left: 15%;
 }
 
 #options {

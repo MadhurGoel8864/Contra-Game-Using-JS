@@ -22,6 +22,7 @@ function change_image() {
   division.style.display = "none";
   let canva = document.getElementById("myCanvas");
   canva.style.display = "flex";
+  controls.style.display = "none";
   background_audio.play();
 }
 const canvas = document.getElementById("myCanvas");
@@ -78,14 +79,18 @@ let b = 0;
 let framex = 0;
 let framey = 0;
 let facing = 1;
+let diagonal_facing = 1;
 let rotate_angle = 180;
 let cnt = 0;
 let fireball_x = [];
 let fireball_y = [];
+let diagonal_fireball_x = [];
+let diagonal_fireball_y = [];
 let enemyFireBallx = [];
 let enemyFireBally = [];
 let enemyFaceGun = [];
 let face_gun = [];
+let diagonal_face_gun = [];
 let enemyX = 820;
 let enemyY = 0;
 let bridgeDissapear = false;
@@ -388,17 +393,24 @@ function calculateGroundLevel(playerX, playerY) {
 }
 function create_fireball() {
   for (let i = 0; i < fireball_x.length; ++i) {
-    ctx.drawImage(
-      fireball_image,
-      fireball_x[i] + 28,
-      fireball_y[i] + 32,
-      15,
-      15
-    );
+    ctx.drawImage(fireball_image, fireball_x[i] + 28, fireball_y[i] + 32, 15, 15);
     if (face_gun[i] == 1) fireball_x[i] += 6;
     else fireball_x[i] -= 6;
     if (fireball_x[i] === enemyX) {
       enemyDead = true;
+    }
+  }
+}
+function create_diagonal_fireball() {
+  for (let i = 0; i < diagonal_fireball_x.length; i++) {
+    ctx.drawImage(fireball_image, diagonal_fireball_x[i] + 10, diagonal_fireball_y[i] + 20, 15, 15);
+    if (diagonal_face_gun[i] == 1) {
+      diagonal_fireball_x[i] += 6;
+      diagonal_fireball_y[i] -= 3;
+    }
+    else {
+      diagonal_fireball_x[i] -= 6;
+      diagonal_fireball_y[i] -= 3;
     }
   }
 }
@@ -421,6 +433,7 @@ let counter = 0;
 function update() {
   drawPlatform();
   create_fireball();
+  create_diagonal_fireball();
   playerX += xv;
   playerY += yv;
   enemyX += enemyXVelo;
@@ -465,6 +478,7 @@ function move(event) {
     else framex = 0;
     startMoving = true;
     facing = 1;
+    diagonal_facing = 1;
     xv = 2;
     laying = 0;
   }
@@ -473,6 +487,7 @@ function move(event) {
     else framex = 0;
     startMoving = true;
     facing = 0;
+    diagonal_facing = 0;
     xv = -2;
     laying = 0;
   }
@@ -499,6 +514,16 @@ function move1(event) {
     fireball_y.push(playerY);
     face_gun.push(facing);
   }
+
+  if (event.key === "e") {
+    let fire_audio = new Audio("audios/gun_sound.mp3");
+    fire_audio.play();
+    diagonal_fireball_x.push(playerX);
+    diagonal_fireball_y.push(playerY);
+    diagonal_face_gun.push(diagonal_facing);
+  }
+
+
 }
 function stop(event) {
   if (event.key === "d") {
@@ -561,6 +586,7 @@ function animation() {
   requestAnimationFrame(animation);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   update();
+  console.log(facing, " ", diagonal_facing)
 }
 
 animation();
