@@ -20,8 +20,7 @@ body {
 }
 
 #logo {
-  width: 600px;
-  margin-bottom: 40px;
+  width: 590px;
 }
 
 #start_btn {
@@ -52,10 +51,32 @@ body {
   height: 40px;
   font-size: 18px;
   border-radius: 20px;
+  margin-bottom: 40px;
 }
 
 #rules:hover {
   cursor: pointer;
   transform: scale(1.1);
   transition: all 0.1s ease;
+}
+
+#controls {
+  display: none;
+  margin-right: 60x;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid grey;
+}
+
+#heading {
+  display: inline;
+  color: yellow;
+  display: flex;
+  margin-bottom: 20px;
+  font-size: 25px;
+}
+
+#rules_display {
+  color: azure;
+  margin-bottom: 30px;
 }
