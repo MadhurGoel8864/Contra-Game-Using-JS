@@ -44,6 +44,7 @@ let ground = canvas.height;
 let laying = 0;
 let enemyXVelo = 0;
 let enemyYVelo = 0;
+let enemies = [];
 let onWater = false;
 const backHeight = window.innerHeight;
 const backWidth = window.innerWidth;
@@ -488,7 +489,7 @@ function update() {
   }
 
   drawPlayer();
-  drawEnemy();
+  // drawEnemy();
 }
 function move(event) {
   if (event.key === "s") {
@@ -553,7 +554,7 @@ function stop(event) {
     xv = 0;
   }
 }
-
+/*
 let enemyPosition = {
   sx: 190,
   sy: 43,
@@ -563,6 +564,8 @@ let enemyPosition = {
   dw: 50,
   cols: 5,
 };
+
+let reSpawnEnemy = 0;
 let enemyReverse = { sx: 228, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 };
 let shiftRightEnemy = 0;
 let shiftLeftEnemy = 0;
@@ -615,27 +618,110 @@ function drawEnemy() {
       blastFlag = false;
     }
   }
-  setTimeout(() => {
-    enemyDead = 0;
-    shiftRightEnemy = 0;
-    enemyX = 920;
-    console.log("Hello");
-    enemyY = 0;
-    delayEnemySprite = 0;
-    blastFlag = 0;
-    shiftLeftEnemy = 0;
-  }, 12000);
+
+  // setTimeout(() => {
+  //   enemyDead = false;
+  //   shiftRightEnemy = 0;
+  //   movingLeft = true;
+  //   enemyX = 920;
+  //   console.log("Hello");
+  //   enemyY = 0;
+  //   delayEnemySprite = 0;
+  //   blastFlag = 0;
+  //   shiftLeftEnemy = 0;
+  // }, 12000);
+}
+*/
+let enemyPosition = {
+  sx: 190,
+  sy: 43,
+  sh: 36,
+  sw: 19,
+  dh: 80,
+  dw: 50,
+  cols: 5,
+};
+let enemyReverse = { sx: 228, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 };
+
+class Enemy {
+  constructor() {
+    this.position = { x: 920, y: 0 };
+    this.size = { height: 80, width: 50 };
+    this.velocity = { x: -4, y: 0 };
+    this.baseLevel = canvas.height;
+    this.shiftRightEnemy = 0;
+    this.shiftLeftEnemy = 0;
+    this.delayEnemySprite = 0;
+    this.enemyDead = false;
+    this.blastFlag = true;
+  }
+  drawEnemy() {
+    if (!this.enemyDead) {
+      ctx.drawImage(
+        reverseEnemy,
+        enemyPosition.sx + this.shiftLeftEnemy,
+        enemyPosition.sy,
+        enemyPosition.sw,
+        enemyPosition.sh,
+        this.position.x,
+        this.position.y,
+        50,
+        100
+      );
+      if (this.delayEnemySprite % 10 === 0) {
+        this.shiftLeftEnemy -= enemyPosition.sw;
+        if (this.shiftLeftEnemy < -enemyPosition.sw * enemyPosition.cols) {
+          this.shiftLeftEnemy = 0;
+        }
+      }
+      this.delayEnemySprite++;
+    } else {
+      if (blastFlag) {
+        ctx.drawImage(blastImage, enemyX, enemyY, 50, 50);
+        blastFlag = false;
+      }
+    }
+  }
+  updatePosition() {
+    if (calculateGroundLevel(this.position.x, this.position.y) === 0) {
+      this.velocity.y = 0;
+    } else
+      this.velocity.y += calculateGroundLevel(this.position.x, this.position.y);
+
+    console.log(this.position.x);
+    this.position.x += this.velocity.x;
+    this.position.y += this.velocity.y;
+
+    this.drawEnemy();
+  }
+}
+
+class Game {
+  constructor() {
+    enemies.push(new Enemy());
+    setInterval(() => {
+      enemies.push(new Enemy());
+    }, 6500);
+  }
+  playGame() {
+    update();
+    enemies.forEach((enemy) => {
+      enemy.updatePosition();
+    });
+  }
 }
 
 addEventListener("keydown", move);
 addEventListener("keyup", move1);
 addEventListener("keyup", stop);
 
-function animation() {
-  requestAnimationFrame(animation);
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  update();
-  console.log(facing, " ", diagonal_facing);
+function startgame() {
+  let gg = new Game();
+  function animation() {
+    requestAnimationFrame(animation);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    gg.playGame();
+  }
+  animation();
 }
-
-animation();
+startgame();
