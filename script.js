@@ -1,21 +1,21 @@
 let starting = document.getElementById("start_btn");
 let rules = document.getElementById("rules");
 let controls = document.getElementById("controls");
+let canvasStyle = document.getElementById("myCanvas");
 let rules_display_condition = 0;
-rules.addEventListener('click', rules_display);
+rules.addEventListener("click", rules_display);
 function rules_display() {
-  if (rules_display_condition == 0)
-    rules_display_condition = 1;
+  if (rules_display_condition == 0) rules_display_condition = 1;
   else {
     rules_display_condition = 0;
   }
-  if (rules_display_condition == 1)
-    controls.style.display = "flex";
+  if (rules_display_condition == 1) controls.style.display = "flex";
   else {
     controls.style.display = "none";
+    canvasStyle.style.display = "flex";
   }
 }
-starting.addEventListener('click', change_image);
+starting.addEventListener("click", change_image);
 function change_image() {
   let background_audio = new Audio("audios/background_music.mp3");
   let division = document.getElementById("options");
@@ -486,8 +486,7 @@ function move(event) {
 }
 function move1(event) {
   if (event.key === "s") {
-    if (laying == 0)
-      laying = 1;
+    if (laying == 0) laying = 1;
     else {
       laying = 0;
     }
