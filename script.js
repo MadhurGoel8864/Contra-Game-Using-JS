@@ -363,7 +363,6 @@ function blastBridge(playerX, playerY) {
     }
   }
 }
-
 function calculateGroundLevel(playerX, playerY) {
   let flag22 = false;
   for (let i = 0; i < track.length; i++) {
@@ -396,7 +395,7 @@ function create_fireball() {
     ctx.drawImage(fireball_image, fireball_x[i] + 28, fireball_y[i] + 32, 15, 15);
     if (face_gun[i] == 1) fireball_x[i] += 6;
     else fireball_x[i] -= 6;
-    if (fireball_x[i] >= enemyX && fireball_y[i] === enemyY) {
+    if (fireball_x[i] + 10 >= enemyX && fireball_y[i] === enemyY && fireball_x[i] - 10 <= enemyX) {
       enemyDead = true;
     }
   }
@@ -411,6 +410,12 @@ function create_diagonal_fireball() {
     else {
       diagonal_fireball_x[i] -= 6;
       diagonal_fireball_y[i] -= 3;
+    }
+    // if (fireball_x[i] + 10 >= enemyX && fireball_y[i] === enemyY && fireball_x[i] - 10 <= enemyX) {
+    //   enemyDead = true;
+    // }
+    if (diagonal_fireball_x[i] + 10 >= enemyX && diagonal_fireball_y[i] + 30 >= enemyY && diagonal_fireball_y[i] - 30 <= enemyY && diagonal_fireball_y[i] - 10 <= enemyX) {
+      enemyDead = true;
     }
   }
 }
@@ -569,8 +574,9 @@ function drawEnemy() {
       console.log("Hello");
       enemyY = 0;
       delayEnemySprite = 0;
+      blastFlag = 0;
       shiftLeftEnemy = 0;
-    }, Math.random() * 5000);
+    }, 2000);
   }
 }
 
