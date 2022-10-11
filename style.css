@@ -20,7 +20,7 @@ body {
 }
 
 #logo {
-  width: 590px;
+  width: 570px;
 }
 
 #start_btn {
@@ -73,7 +73,7 @@ body {
   color: yellow;
   display: flex;
   margin-bottom: 20px;
-  font-size: 25px;
+  font-size: 35px;
 }
 
 #rules_display {
