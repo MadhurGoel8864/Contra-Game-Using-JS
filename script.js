@@ -29,6 +29,8 @@ const ctx = canvas.getContext("2d");
 
 canvas.width = 1024;
 canvas.height = 576;
+let movingLeft = true;
+let movingRight = true;
 let ex = 700;
 let ex1 = 1500;
 let ex2 = 1100;
@@ -423,8 +425,6 @@ function update() {
   create_fireball();
   playerX += xv;
   playerY += yv;
-  enemyX += enemyXVelo;
-  enemyY += enemyYVelo;
   if (playerX >= 550) {
     playerX = 549;
     moveForward();
@@ -432,6 +432,13 @@ function update() {
   if (playerX <= 110) {
     playerX = 110;
   }
+  if (movingLeft) {
+    enemyXVelo = -2;
+  } else {
+    enemyXVelo = 2;
+  }
+  enemyX += enemyXVelo;
+  enemyY += enemyYVelo;
   if (calculateGroundLevel(playerX, playerY) === 0) yv = 0;
   else yv += calculateGroundLevel(playerX, playerY);
   if (calculateGroundLevel(enemyX, enemyY) === 0) enemyYVelo = 0;
@@ -452,6 +459,11 @@ function update() {
   } else {
     enemyXVelo = 0;
   }
+
+  if (enemyX < 100) {
+    movingLeft = false;
+  }
+  console.log(movingLeft);
 
   drawPlayer();
   drawEnemy();
@@ -519,6 +531,7 @@ let enemyPosition = {
   dw: 50,
   cols: 5,
 };
+let enemyReverse = { sx: 228, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 };
 let shiftRightEnemy = 0;
 let shiftLeftEnemy = 0;
 let delayEnemySprite = 0;
@@ -526,22 +539,42 @@ let enemyDead = false;
 let blastFlag = true;
 function drawEnemy() {
   if (!enemyDead) {
-    ctx.drawImage(
-      reverseEnemy,
-      enemyPosition.sx + shiftLeftEnemy,
-      enemyPosition.sy,
-      enemyPosition.sw,
-      enemyPosition.sh,
-      enemyX,
-      enemyY,
-      50,
-      100
-    );
-    if (delayEnemySprite % 10 === 0) {
-      shiftLeftEnemy -= enemyPosition.sw;
-      if (shiftLeftEnemy < -enemyPosition.sw * enemyPosition.cols) {
-        shiftLeftEnemy = 0;
+    if (movingLeft) {
+      ctx.drawImage(
+        reverseEnemy,
+        enemyPosition.sx + shiftLeftEnemy,
+        enemyPosition.sy,
+        enemyPosition.sw,
+        enemyPosition.sh,
+        enemyX,
+        enemyY,
+        50,
+        100
+      );
+      if (delayEnemySprite % 10 === 0) {
+        shiftLeftEnemy -= enemyPosition.sw;
+        if (shiftLeftEnemy < -enemyPosition.sw * enemyPosition.cols) {
+          shiftLeftEnemy = 0;
+        }
       }
+    } else {
+      if (delayEnemySprite % 10 === 0) {
+        shiftRightEnemy += enemyReverse.sw;
+        if (shiftRightEnemy >= enemyReverse.sw * enemyReverse.cols) {
+          shiftRightEnemy = 0;
+        }
+      }
+      ctx.drawImage(
+        player_image,
+        enemyReverse.sx + shiftRightEnemy,
+        enemyReverse.sy,
+        enemyReverse.sw,
+        enemyReverse.sh,
+        enemyX,
+        enemyY,
+        50,
+        100
+      );
     }
     delayEnemySprite++;
   } else {
