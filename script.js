@@ -61,6 +61,7 @@ let enemyFaceGun = [];
 let face_gun = [];
 let enemyX = 820;
 let enemyY = 0;
+let bridgeDissapear = false;
 let trackImage = {
   road: { sx: 100, sy: 100, sw: 60, sh: 60 },
   grass: { sx: 100, sy: 65, sw: 70, sh: 30 },
@@ -281,12 +282,32 @@ function drawPlayer() {
     }
   }
 }
+
+function blastBridge(playerX, playerY) {
+  for (let i = 0; i < track.length; i++) {
+    for (let j = 0; j < track[i].length; j++) {
+      let trackPosition = { x: j * 60 - shiftTrack, y: i * 60 };
+      if (track[i][j] === 3 || track[i][j] === 4 || track[i][j] === 5) {
+        if (
+          playerX + 80 >= trackPosition.x &&
+          playerX <= trackPosition.x + 60 &&
+          playerY + 80 <= trackPosition.y &&
+          playerY + 80 >= trackPosition.y - 30
+        ) {
+          track[i][j] = 0;
+          ctx.drawImage(blastImage, trackPosition.x, trackPosition.y, 50, 50);
+        }
+      }
+    }
+  }
+}
+
 function calculateGroundLevel(playerX, playerY) {
   let flag22 = false;
   for (let i = 0; i < track.length; i++) {
     for (let j = 0; j < track[i].length; j++) {
+      let trackPosition = { x: j * 60, y: i * 60 };
       if (track[i][j] > 1) {
-        let trackPosition = { x: j * 60, y: i * 60 };
         if (
           playerX + 80 >= trackPosition.x &&
           playerX <= trackPosition.x + 60 &&
@@ -358,6 +379,9 @@ function update() {
   else yv += calculateGroundLevel(playerX, playerY);
   if (calculateGroundLevel(enemyX, enemyY) === 0) enemyYVelo = 0;
   else enemyYVelo += calculateGroundLevel(enemyX, enemyY);
+
+  blastBridge(playerX, playerY);
+
   if (enemyX < 50) {
     enemyXVelo = 0;
   } else if (enemyYVelo === 0) {
@@ -366,7 +390,7 @@ function update() {
       enemyFireBally.push(enemyY);
     }
     counter++;
-    createEnemyFireBall();
+    // createEnemyFireBall();
     enemyXVelo = -2;
   } else {
     enemyXVelo = 0;
