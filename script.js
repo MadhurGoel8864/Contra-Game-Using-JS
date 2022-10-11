@@ -396,7 +396,7 @@ function create_fireball() {
     ctx.drawImage(fireball_image, fireball_x[i] + 28, fireball_y[i] + 32, 15, 15);
     if (face_gun[i] == 1) fireball_x[i] += 6;
     else fireball_x[i] -= 6;
-    if (fireball_x[i] === enemyX) {
+    if (fireball_x[i] >= enemyX && fireball_y[i] === enemyY) {
       enemyDead = true;
     }
   }
@@ -449,9 +449,7 @@ function update() {
   else yv += calculateGroundLevel(playerX, playerY);
   if (calculateGroundLevel(enemyX, enemyY) === 0) enemyYVelo = 0;
   else enemyYVelo += calculateGroundLevel(enemyX, enemyY);
-
   blastBridge(playerX, playerY);
-
   if (enemyX < 50) {
     enemyXVelo = 0;
   } else if (enemyYVelo === 0) {
@@ -460,12 +458,10 @@ function update() {
       enemyFireBally.push(enemyY);
     }
     counter++;
-    // createEnemyFireBall();
     enemyXVelo = -2;
   } else {
     enemyXVelo = 0;
   }
-
   drawPlayer();
   drawEnemy();
 }
@@ -552,17 +548,7 @@ let enemyDead = false;
 let blastFlag = true;
 function drawEnemy() {
   if (!enemyDead) {
-    ctx.drawImage(
-      reverseEnemy,
-      enemyPosition.sx + shiftLeftEnemy,
-      enemyPosition.sy,
-      enemyPosition.sw,
-      enemyPosition.sh,
-      enemyX,
-      enemyY,
-      50,
-      100
-    );
+    ctx.drawImage(reverseEnemy, enemyPosition.sx + shiftLeftEnemy, enemyPosition.sy, enemyPosition.sw, enemyPosition.sh, enemyX, enemyY, 50, 100);
     if (delayEnemySprite % 10 === 0) {
       shiftLeftEnemy -= enemyPosition.sw;
       if (shiftLeftEnemy < -enemyPosition.sw * enemyPosition.cols) {
@@ -570,11 +556,21 @@ function drawEnemy() {
       }
     }
     delayEnemySprite++;
-  } else {
+  }
+  else {
     if (blastFlag) {
       ctx.drawImage(blastImage, enemyX, enemyY, 50, 50);
       blastFlag = false;
     }
+    setTimeout(() => {
+      enemyDead = 0;
+      shiftRightEnemy = 0;
+      enemyX = 920;
+      console.log("Hello");
+      enemyY = 0;
+      delayEnemySprite = 0;
+      shiftLeftEnemy = 0;
+    }, Math.random() * 5000);
   }
 }
 
@@ -586,7 +582,6 @@ function animation() {
   requestAnimationFrame(animation);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   update();
-  console.log(facing, " ", diagonal_facing)
 }
 
 animation();
