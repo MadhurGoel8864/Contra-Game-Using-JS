@@ -501,8 +501,8 @@ function drawEnemy() {
       enemyPosition.sh,
       enemyX,
       enemyY,
-      80,
-      80
+      50,
+      100
     );
     if (delayEnemySprite % 10 === 0) {
       shiftLeftEnemy -= enemyPosition.sw;
