@@ -49,7 +49,7 @@ let laying = 0;
 let enemyXVelo = 0;
 let enemyYVelo = 0;
 let enemies = [];
-let onWater = false;
+let lives = 5;
 const backHeight = window.innerHeight;
 const backWidth = window.innerWidth;
 shiftTrack = 0;
@@ -580,16 +580,6 @@ class Bullet {
   }
 }
 
-// class Player {
-//   constructor() {
-//     console.log(playerX);
-//     this.position.x = playerX;
-//     this.position.y = playerY;
-//     this.size = { height: 80, width: 50 };
-//     this.id = "playa";
-//   }
-// }
-
 let enemyPosition = {
   sx: 190,
   sy: 43,
@@ -692,6 +682,15 @@ class Game {
       });
       if (checkBulletCollision(bulettt, playa)) {
         playerDead = true;
+        lives--;
+        if (lives > 0) {
+          playerX = 220;
+          playerY = 0;
+          playa.position.x = playerX;
+          playa.position.y = playerY;
+          playerDead = false;
+          blastPlayer = true;
+        }
       }
       return bulettt;
     });
