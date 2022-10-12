@@ -426,6 +426,10 @@ function update() {
       playerX = 349;
       moveForward();
     }
+  } else {
+    if (playerX >= 920) {
+      playerX = 920;
+    }
   }
   if (playerX <= 110) {
     playerX = 110;
