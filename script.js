@@ -425,7 +425,7 @@ function game_start() {
       document.getElementById("game_status").textContent = "Lose!";
       document.getElementById("win_display").style.color = "red";
     }
-    if (score > 5 || lives <= 0) {
+    if (score > 9 || lives <= 0) {
       canva.style.display = "none";
       win_msg.style.display = "flex";
     }
