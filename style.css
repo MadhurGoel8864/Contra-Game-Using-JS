@@ -23,13 +23,12 @@ body {
 }
 
 #logo {
-  width: 550px;
+  width: 520px;
 }
 
 #score {
   color: beige;
   font-size: 40px;
-  /* display: none; */
   margin-left: 15%;
   padding-top: 2%;
 }
@@ -42,7 +41,7 @@ body {
   font-size: 20px;
   background-color: rgb(255, 0, 0);
   border-radius: 20px;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
 }
 
 #start_btn:hover {
