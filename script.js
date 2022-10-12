@@ -449,8 +449,8 @@ function update() {
   create_diagonal_fireball();
   playerX += xv;
   playerY += yv;
-  if (playerX >= 550) {
-    playerX = 549;
+  if (playerX >= 350) {
+    playerX = 349;
     moveForward();
   }
   if (playerX <= 110) {
@@ -537,7 +537,11 @@ function createNewBullet(x, y, { dx, dy, sx, sy }) {
 function shoot() {
   if (facing === 1) {
     bullets.push(
-      createNewBullet(playerX + 50, playerY + 20, shootBulletDirection.right)
+      createNewBullet(playerX, playerY, shootBulletDirection.right, "player")
+    );
+  } else if (facing === 0) {
+    bullets.push(
+      createNewBullet(playerX, playerY, shootBulletDirection.left, "player")
     );
   }
 }
@@ -564,12 +568,13 @@ function shoot() {
 let bullets = [];
 
 class Bullet {
-  constructor(x, y, sx, sy, dx, dy) {
+  constructor(x, y, sx, sy, dx, dy, shotBy) {
     this.position = { x, y };
     this.bulletDirection = { dx, dy };
     this.bulletSourceImage = { sx, sy };
     this.bulletSpeed = 4;
     this.size = { height: 50, width: 50 };
+    this.shotBy = shotBy;
     this.drawBullet();
   }
   checkOutOfBox() {
@@ -606,6 +611,22 @@ class Bullet {
   }
 }
 
+// class Player {
+//   constructor() {
+//     console.log(playerX);
+//     this.position.x = playerX;
+//     this.position.y = playerY;
+//     this.size = { height: 80, width: 50 };
+//     this.id = "playa";
+//   }
+// }
+
+let playa = {
+  position: { x: playerX, y: playerY },
+  size: { height: 80, width: 50 },
+  id: "playa",
+};
+
 let enemyPosition = {
   sx: 190,
   sy: 43,
@@ -629,6 +650,7 @@ class Enemy {
     this.delayEnemySprite = 0;
     this.enemyDead = false;
     this.blastFlag = true;
+    this.counter = 1;
     this.id = "enemy";
   }
   drawEnemy() {
@@ -657,6 +679,14 @@ class Enemy {
         this.blastFlag = false;
       }
     }
+  }
+  shoot() {
+    if (this.counter % 100 === 0) {
+      bullets.push(
+        new Bullet(this.position.x, this.position.y, 352, 0, -1, 0, "enemy")
+      );
+    }
+    this.counter++;
   }
   // create_fireball() {
   //   for (let i = 0; i < fireball_x.length; ++i) {
@@ -695,6 +725,7 @@ class Enemy {
     //   this.counter++;
     // }
     this.drawEnemy();
+    this.shoot();
     // this.create_fireball();
   }
 }
@@ -717,20 +748,24 @@ class Game {
     });
     bullets = bullets.filter((bulettt) => {
       enemies = enemies.filter((enemy) => {
-        //checking if the bullet hits the enemy with loop again at enemies
         if (checkBulletCollision(bulettt, enemy)) {
-          console.log("he");
           return null;
         } else {
           return enemy;
         }
       });
+      if (checkBulletCollision(bulettt, playa)) {
+        console.log("hello");
+        playerDead = true;
+      }
       return bulettt;
     });
   }
 }
 function checkBulletCollision(bullet, target) {
-  console.log("j");
+  if (target.id == "playa") {
+    console.log(target.position.x);
+  }
   if (bullet.shotBy != target.id) {
     let x1 = bullet.position.x;
     let y1 = bullet.position.y;
