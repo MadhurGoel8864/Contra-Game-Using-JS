@@ -461,18 +461,19 @@ function move(event) {
   }
 }
 function move1(event) {
+  console.log(event.key);
   if (event.key === "s" || event.key === "ArrowDown") {
     if (laying == 0) laying = 1;
     else {
       laying = 0;
     }
   }
-  if (event.key === "q" || event.key === "Enter") {
+  if (event.key === "q" || event.key === "Enter" || event.key == " ") {
     let fire_audio = new Audio("audios/gun_sound.mp3");
     shoot();
   }
 
-  if (event.key === "e") {
+  if (event.key === "e" || event.key == "/") {
     let fire_audio = new Audio("audios/gun_sound.mp3");
     fire_audio.play();
     diagonal_fireball_x.push(playerX);
@@ -480,7 +481,7 @@ function move1(event) {
     diagonal_face_gun.push(diagonal_facing);
   }
 
-  if (event.key === "e") {
+  if (event.key === "e" || event.key == "/") {
     let fire_audio = new Audio("audios/gun_sound.mp3");
     fire_audio.play();
     diagonal_fireball_x.push(playerX);
@@ -669,7 +670,6 @@ class Game {
         }
       });
       if (checkBulletCollision(bulettt, playa)) {
-        console.log("hello");
         playerDead = true;
       }
       return bulettt;
@@ -678,10 +678,8 @@ class Game {
 }
 function checkBulletCollision(bullet, target) {
   if (target.id == "playa") {
-    console.log(target.position.x);
   }
   if (bullet.shotBy != target.id) {
-    console.log("hejksfhkfsllo");
     let x1 = bullet.position.x;
     let y1 = bullet.position.y;
     let w1 = bullet.size.width;
