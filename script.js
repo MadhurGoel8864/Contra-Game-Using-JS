@@ -455,9 +455,11 @@ function update() {
   create_diagonal_fireball();
   playerX += xv;
   playerY += yv;
-  if (playerX >= 350) {
-    playerX = 349;
-    moveForward();
+  if ((track[0].length - 1) * 60 >= canvas.width) {
+    if (playerX >= 350) {
+      playerX = 349;
+      moveForward();
+    }
   }
   if (playerX <= 110) {
     playerX = 110;
@@ -553,7 +555,12 @@ function shoot() {
     );
   } else if (facing === 0) {
     bullets.push(
-      createNewBullet(playerX, playerY, shootBulletDirection.left, "player")
+      createNewBullet(
+        playerX - 60,
+        playerY,
+        shootBulletDirection.left,
+        "player"
+      )
     );
   }
 }
@@ -677,6 +684,7 @@ class Enemy {
     this.shoot();
   }
 }
+let delayInReSpawn = 0;
 let enemyy = new Enemy();
 class Game {
   constructor() {
@@ -706,18 +714,24 @@ class Game {
       if (checkBulletCollision(bulettt, playa)) {
         console.log("hello");
         playerDead = true;
-        lives--;
-        if (lives > 0) {
-          playerX = 220;
-          playerY = 0;
-          playa.position.x = playerX;
-          playa.position.y = playerY;
-          playerDead = false;
-          blastPlayer = true;
+        if (delayInReSpawn % 30 === 0) {
+          lives--;
+          if (lives > 0) {
+            playerX = 0;
+            playerY = 0;
+            playa.position.x = playerX;
+            playa.position.y = playerY;
+            playerDead = false;
+            blastPlayer = true;
+          } else {
+            console.log("GAMEOVER");
+            clearInterval(enemyInterval);
+          }
         }
       }
       return bulettt;
     });
+    delayInReSpawn++;
   }
 }
 function checkBulletCollision(bullet, target) {
@@ -736,7 +750,7 @@ function checkBulletCollision(bullet, target) {
     let w2 = target.size.width;
 
     if (laying == 1) {
-      trackPosition.y = target.position.y + 60;
+      y2 = y2 + 60;
     }
 
     if (x2 > w1 + x1 || x1 > w2 + x2 || y2 > h1 + y1 || y1 > h2 + y2) {

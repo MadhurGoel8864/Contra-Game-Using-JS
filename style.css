@@ -12,6 +12,7 @@ body {
 #myCanvas {
   display: none;
   margin-left: 15%;
+  margin-top: 10%;
 }
 
 #options {
