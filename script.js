@@ -1,8 +1,10 @@
 let starting = document.getElementById("start_btn");
+let win_msg = document.getElementById('win_message');
 let rules = document.getElementById("rules");
 let controls = document.getElementById("controls");
 let rules_display_condition = 0;
 let scores = document.getElementById("score");
+let status = 1;
 rules.addEventListener("click", rules_display);
 function rules_display() {
   if (rules_display_condition == 0) rules_display_condition = 1;
@@ -15,13 +17,13 @@ function rules_display() {
   }
 }
 starting.addEventListener("click", change_image);
+let canva = document.getElementById("myCanvas");
 function change_image() {
   let background_audio = new Audio("audios/background_music.mp3");
   scores.style.display = "flex";
   let division = document.getElementById("options");
-  division.style.display = "none";
-  let canva = document.getElementById("myCanvas");
   canva.style.display = "flex";
+  division.style.display = "none";
   controls.style.display = "none";
   background_audio.play();
 }
@@ -417,13 +419,23 @@ function create_diagonal_fireball() {
 }
 let counter = 0;
 function update() {
+  if (lives <= 0) {
+    document.getElementById("game_status").textContent = "Lose!";
+    document.getElementById("win_display").style.color = "red";
+  }
+  if (score > 5 || lives <= 0) {
+    canva.style.display = "none";
+    win_msg.style.display = "flex";
+  }
   drawPlatform();
   create_diagonal_fireball();
   playerX += xv;
   playerY += yv;
-  if (playerX >= 350) {
-    playerX = 349;
-    moveForward();
+  if ((track[0].length - 1) * 60 >= canvas.width) {
+    if (playerX >= 350) {
+      playerX = 349;
+      moveForward();
+    }
   }
   if (playerX <= 110) {
     playerX = 110;
@@ -470,7 +482,6 @@ function move(event) {
   }
 }
 function move1(event) {
-  console.log(event.key);
   if (event.key === "s" || event.key === "ArrowDown") {
     if (laying == 0) laying = 1;
     else {
@@ -479,6 +490,7 @@ function move1(event) {
   }
   if (event.key === "q" || event.key === "Enter" || event.key == " ") {
     let fire_audio = new Audio("audios/gun_sound.mp3");
+    fire_audio.play();
     shoot();
   }
 
@@ -529,7 +541,12 @@ function shoot() {
     );
   } else if (facing === 0) {
     bullets.push(
-      createNewBullet(playerX, playerY, shootBulletDirection.left, "player")
+      createNewBullet(
+        playerX - 60,
+        playerY,
+        shootBulletDirection.left,
+        "player"
+      )
     );
   }
 }
@@ -653,6 +670,7 @@ class Enemy {
     this.shoot();
   }
 }
+let delayInReSpawn = 0;
 let enemyy = new Enemy();
 class Game {
   constructor() {
@@ -673,7 +691,6 @@ class Game {
       enemies = enemies.filter((enemy) => {
         if (checkBulletCollision(bulettt, enemy)) {
           score++;
-          console.log(score);
           document.querySelector('.scoreUpdate').textContent = score;
           return null;
         } else {
@@ -682,18 +699,25 @@ class Game {
       });
       if (checkBulletCollision(bulettt, playa)) {
         playerDead = true;
-        lives--;
-        if (lives > 0) {
-          playerX = 220;
-          playerY = 0;
-          playa.position.x = playerX;
-          playa.position.y = playerY;
-          playerDead = false;
-          blastPlayer = true;
+        if (delayInReSpawn % 30 === 0) {
+          lives--;
+          // document.querySelector('.scoreUpdate').textContent = score;
+          document.getElementById("livesUpdate").textContent = lives;
+          if (lives > 0) {
+            playerX = 0;
+            playerY = 0;
+            playa.position.x = playerX;
+            playa.position.y = playerY;
+            playerDead = false;
+            blastPlayer = true;
+          } else {
+            clearInterval(enemyInterval);
+          }
         }
       }
       return bulettt;
     });
+    delayInReSpawn++;
   }
 }
 function checkBulletCollision(bullet, target) {
@@ -709,8 +733,8 @@ function checkBulletCollision(bullet, target) {
     let h2 = target.size.height;
     let w2 = target.size.width;
 
-    if (laying === 1) {
-      target.position.y += 60;
+    if (laying == 1) {
+      y2 = y2 + 60;
     }
 
     if (x2 > w1 + x1 || x1 > w2 + x2 || y2 > h1 + y1 || y1 > h2 + y2) {

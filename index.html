@@ -16,7 +16,9 @@
   </head>
 
 <body>
-  <div id="score">Score: <span class="scoreUpdate">0</span> </div>
+  <div id="score">Score: <span class="scoreUpdate">0</span>
+    <span id="live">Lives: <span id="livesUpdate">5</span> </span>
+  </div>
   <div id="options">
     <img src="img/game_logo.png" alt="" id="logo">
     <input type="button" value="Start Game" id="start_btn">
@@ -34,6 +36,10 @@
         <li>e:- Diagonally Fire Bullets</li>
       </ul>
     </div>
+  </div>
+  <div id="win_message">
+    <div id="win_display">You &nbsp; <span id="game_status">Win!</span> </div>
+    <div id="Reload">Reload to play again.</div>
   </div>
   <canvas id="myCanvas"></canvas>
   <script src="script.js"></script>
