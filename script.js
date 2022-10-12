@@ -33,7 +33,7 @@ function game_start() {
   const ctx = canvas.getContext("2d");
 
   canvas.width = 1024;
-  canvas.height = 576;
+  canvas.height = 776;
   let enemyInterval;
   let score = 0;
   let ex = 700;
@@ -423,9 +423,11 @@ function game_start() {
   function update() {
     if (lives <= 0) {
       document.getElementById("game_status").textContent = "Lose!";
+      lives = 0;
       document.getElementById("win_display").style.color = "red";
     }
     if (score > 9 || lives <= 0) {
+      lives = 0;
       canva.style.display = "none";
       win_msg.style.display = "flex";
     }
@@ -705,9 +707,9 @@ function game_start() {
         if (checkBulletCollision(bulettt, playa)) {
           playerDead = true;
           if (delayInReSpawn % 5 === 0) {
+            document.getElementById("livesUpdate").textContent = lives;
             lives--;
             // document.querySelector('.scoreUpdate').textContent = score;
-            document.getElementById("livesUpdate").textContent = lives;
             if (lives > 0) {
               playerX = 0;
               playerY = 0;
