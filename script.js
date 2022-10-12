@@ -2,6 +2,7 @@ let starting = document.getElementById("start_btn");
 let rules = document.getElementById("rules");
 let controls = document.getElementById("controls");
 let rules_display_condition = 0;
+let scores = document.getElementById("score");
 rules.addEventListener("click", rules_display);
 function rules_display() {
   if (rules_display_condition == 0) rules_display_condition = 1;
@@ -16,6 +17,7 @@ function rules_display() {
 starting.addEventListener("click", change_image);
 function change_image() {
   let background_audio = new Audio("audios/background_music.mp3");
+  scores.style.display = "flex";
   let division = document.getElementById("options");
   division.style.display = "none";
   let canva = document.getElementById("myCanvas");
@@ -29,6 +31,7 @@ const ctx = canvas.getContext("2d");
 canvas.width = 1024;
 canvas.height = 576;
 let enemyInterval;
+let score = 0;
 let ex = 700;
 let movingLeft = true;
 let ex1 = 1500;
@@ -51,6 +54,11 @@ const backHeight = window.innerHeight;
 const backWidth = window.innerWidth;
 shiftTrack = 0;
 shiftTrackBy = 2;
+let playa = {
+  position: { x: 200, y: 0 },
+  size: { height: 80, width: 50 },
+  id: "player",
+};
 
 const groundGravity = 0.5;
 
@@ -288,9 +296,9 @@ let player = {
 function drawPlayer() {
   if (!playerDead) {
     if (laying == 1 && facing == 1) {
-      ctx.drawImage(laying_img, playerX, playerY + 25, 80, 80);
+      ctx.drawImage(laying_img, playerX, playerY + 30, 80, 80);
     } else if (laying == 1 && facing == 0) {
-      ctx.drawImage(reverse_laying_image, playerX, playerY + 25, 80, 80);
+      ctx.drawImage(reverse_laying_image, playerX, playerY + 30, 80, 80);
     } else if (facing == 1) {
       if (startMoving === true) {
         if (playerCounter % 10 === 0) {
@@ -420,7 +428,8 @@ function update() {
   if (playerX <= 110) {
     playerX = 110;
   }
-
+  playa.position.x = playerX;
+  playa.position.y = playerY;
   if (calculateGroundLevel(playerX, playerY) === 0) {
     yv = 0;
     flag = true;
@@ -511,7 +520,12 @@ function createNewBullet(x, y, { dx, dy, sx, sy }) {
 function shoot() {
   if (facing === 1) {
     bullets.push(
-      createNewBullet(playerX, playerY, shootBulletDirection.right, "player")
+      createNewBullet(
+        playerX + 60,
+        playerY,
+        shootBulletDirection.right,
+        "player"
+      )
     );
   } else if (facing === 0) {
     bullets.push(
@@ -566,11 +580,15 @@ class Bullet {
   }
 }
 
-let playa = {
-  position: { x: playerX, y: playerY },
-  size: { height: 80, width: 50 },
-  id: "playa",
-};
+// class Player {
+//   constructor() {
+//     console.log(playerX);
+//     this.position.x = playerX;
+//     this.position.y = playerY;
+//     this.size = { height: 80, width: 50 };
+//     this.id = "playa";
+//   }
+// }
 
 let enemyPosition = {
   sx: 190,
@@ -650,7 +668,7 @@ class Game {
   constructor() {
     enemyInterval = setInterval(() => {
       enemies.push(new Enemy());
-    }, 6500);
+    }, 4000);
   }
   playGame() {
     update();
@@ -664,6 +682,9 @@ class Game {
     bullets = bullets.filter((bulettt) => {
       enemies = enemies.filter((enemy) => {
         if (checkBulletCollision(bulettt, enemy)) {
+          score++;
+          console.log(score);
+          document.querySelector('.scoreUpdate').textContent = score;
           return null;
         } else {
           return enemy;
@@ -689,6 +710,10 @@ function checkBulletCollision(bullet, target) {
     let y2 = target.position.y;
     let h2 = target.size.height;
     let w2 = target.size.width;
+
+    if (laying === 1) {
+      target.position.y += 30;
+    }
 
     if (x2 > w1 + x1 || x1 > w2 + x2 || y2 > h1 + y1 || y1 > h2 + y2) {
       return false;
