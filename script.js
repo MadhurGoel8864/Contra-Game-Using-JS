@@ -294,7 +294,7 @@ let player = {
 function drawPlayer() {
   if (!playerDead) {
     if (laying == 1 && facing == 1) {
-      ctx.drawImage(laying_img, playerX, playerY, 80, 80);
+      ctx.drawImage(laying_img, playerX, playerY + 60, 100, 50);
     } else if (laying == 1 && facing == 0) {
       ctx.drawImage(reverse_laying_image, playerX, playerY, 80, 80);
     } else if (facing == 1) {
@@ -734,6 +734,10 @@ function checkBulletCollision(bullet, target) {
     let y2 = target.position.y;
     let h2 = target.size.height;
     let w2 = target.size.width;
+
+    if (laying == 1) {
+      trackPosition.y = target.position.y + 60;
+    }
 
     if (x2 > w1 + x1 || x1 > w2 + x2 || y2 > h1 + y1 || y1 > h2 + y2) {
       return false;
