@@ -296,9 +296,9 @@ let player = {
 function drawPlayer() {
   if (!playerDead) {
     if (laying == 1 && facing == 1) {
-      ctx.drawImage(laying_img, playerX, playerY + 30, 80, 80);
+      ctx.drawImage(laying_img, playerX, playerY + 40, 80, 80);
     } else if (laying == 1 && facing == 0) {
-      ctx.drawImage(reverse_laying_image, playerX, playerY + 30, 80, 80);
+      ctx.drawImage(reverse_laying_image, playerX, playerY + 40, 80, 80);
     } else if (facing == 1) {
       if (startMoving === true) {
         if (playerCounter % 10 === 0) {
@@ -704,14 +704,13 @@ function checkBulletCollision(bullet, target) {
     let y1 = bullet.position.y;
     let w1 = bullet.size.width;
     let h1 = bullet.size.height;
-
     let x2 = target.position.x;
     let y2 = target.position.y;
     let h2 = target.size.height;
     let w2 = target.size.width;
 
     if (laying === 1) {
-      target.position.y += 30;
+      target.position.y += 60;
     }
 
     if (x2 > w1 + x1 || x1 > w2 + x2 || y2 > h1 + y1 || y1 > h2 + y2) {
