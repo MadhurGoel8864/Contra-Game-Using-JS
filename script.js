@@ -28,6 +28,7 @@ const ctx = canvas.getContext("2d");
 
 canvas.width = 1024;
 canvas.height = 576;
+let enemyInterval;
 let ex = 700;
 let movingLeft = true;
 let ex1 = 1500;
@@ -135,17 +136,17 @@ track = [
   ],
   [
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
     1, 1, 1, 1, 1, 1, 1, 1,
   ],
   [
     2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 4, 4, 4, 4, 5, 2, 2, 2, 2, 2, 2, 2,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+    2, 2, 2, 2, 2, 2, 2, 2, 9, 9, 9, 9, 2, 2, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2,
     2, 2, 2, 2, 2, 2, 2, 2,
   ],
   [
     9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9,
-    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
+    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 9, 9, 9, 9, 9, 9, 9, 9,
     9, 9, 9, 9, 9, 9, 9, 9,
   ],
   [
@@ -390,6 +391,7 @@ function calculateGroundLevel(playerX, playerY) {
     return groundGravity;
   }
 }
+/*
 function create_fireball() {
   for (let i = 0; i < fireball_x.length; ++i) {
     ctx.drawImage(
@@ -401,11 +403,13 @@ function create_fireball() {
     );
     if (face_gun[i] == 1) fireball_x[i] += 6;
     else fireball_x[i] -= 6;
-    if (fireball_x[i] === enemyX) {
+    console.log(fireball_x[i], enemyy.position.x);
+    if (fireball_x[i] === enemyy.position.x) {
       enemyDead = true;
     }
   }
 }
+*/
 function create_diagonal_fireball() {
   for (let i = 0; i < diagonal_fireball_x.length; i++) {
     ctx.drawImage(
@@ -424,25 +428,24 @@ function create_diagonal_fireball() {
     }
   }
 }
-function createEnemyFireBall() {
-  for (let i = 0; i < enemyFireBallx.length; ++i) {
-    ctx.drawImage(
-      fireball_image,
-      enemyFireBallx[i] + 28,
-      enemyFireBally[i] + 32,
-      15,
-      15
-    );
-    enemyFireBallx[i] -= 6;
-    if (enemyFireBallx[i] === playerX) {
-      playerDead = true;
-    }
-  }
-}
+// function createEnemyFireBall() {
+//   for (let i = 0; i < enemyFireBallx.length; ++i) {
+//     ctx.drawImage(
+//       fireball_image,
+//       enemyFireBallx[i] + 28,
+//       enemyFireBally[i] + 32,
+//       15,
+//       15
+//     );
+//     enemyFireBallx[i] -= 6;
+//     if (enemyFireBallx[i] === playerX) {
+//       playerDead = true;
+//     }
+//   }
+// }
 let counter = 0;
 function update() {
   drawPlatform();
-  create_fireball();
   create_diagonal_fireball();
   playerX += xv;
   playerY += yv;
@@ -454,39 +457,12 @@ function update() {
     playerX = 110;
   }
 
-  if (enemyX < 100) {
-    movingLeft = false;
-  }
-
-  if (movingLeft) {
-    enemyXVelo = -2;
-  } else {
-    enemyXVelo = 2;
-  }
-  enemyX += enemyXVelo;
-  enemyY += enemyYVelo;
   if (calculateGroundLevel(playerX, playerY) === 0) {
     yv = 0;
     flag = true;
   } else yv += calculateGroundLevel(playerX, playerY);
-  if (calculateGroundLevel(enemyX, enemyY) === 0) enemyYVelo = 0;
-  else enemyYVelo += calculateGroundLevel(enemyX, enemyY);
 
   blastBridge(playerX, playerY);
-
-  if (enemyX < 50) {
-    enemyXVelo = 0;
-  } else if (enemyYVelo === 0) {
-    if (counter % 55 === 0) {
-      enemyFireBallx.push(enemyX);
-      enemyFireBally.push(enemyY);
-    }
-    counter++;
-    // createEnemyFireBall();
-    enemyXVelo = -2;
-  } else {
-    enemyXVelo = 0;
-  }
 
   drawPlayer();
   // drawEnemy();
@@ -530,10 +506,7 @@ function move1(event) {
   }
   if (event.key === "q") {
     let fire_audio = new Audio("audios/gun_sound.mp3");
-    fire_audio.play();
-    fireball_x.push(playerX);
-    fireball_y.push(playerY);
-    face_gun.push(facing);
+    shoot();
   }
 
   if (event.key === "e") {
@@ -554,84 +527,85 @@ function stop(event) {
     xv = 0;
   }
 }
-/*
-let enemyPosition = {
-  sx: 190,
-  sy: 43,
-  sh: 36,
-  sw: 19,
-  dh: 80,
-  dw: 50,
-  cols: 5,
+let shootBulletDirection = {
+  right: { dx: 1, dy: 0, sx: 352, sy: 0 },
+  left: { dx: -1, dy: 0, sx: 352, sy: 0 },
 };
+function createNewBullet(x, y, { dx, dy, sx, sy }) {
+  return new Bullet(x, y, sx, sy, dx, dy);
+}
+function shoot() {
+  if (facing === 1) {
+    bullets.push(
+      createNewBullet(playerX + 50, playerY + 20, shootBulletDirection.right)
+    );
+  }
+}
 
-let reSpawnEnemy = 0;
-let enemyReverse = { sx: 228, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 };
-let shiftRightEnemy = 0;
-let shiftLeftEnemy = 0;
-let delayEnemySprite = 0;
-let enemyDead = false;
-let blastFlag = true;
-function drawEnemy() {
-  if (!enemyDead) {
-    if (movingLeft) {
-      ctx.drawImage(
-        reverseEnemy,
-        enemyPosition.sx + shiftLeftEnemy,
-        enemyPosition.sy,
-        enemyPosition.sw,
-        enemyPosition.sh,
-        enemyX,
-        enemyY,
-        50,
-        100
-      );
-      if (delayEnemySprite % 10 === 0) {
-        shiftLeftEnemy -= enemyPosition.sw;
-        if (shiftLeftEnemy < -enemyPosition.sw * enemyPosition.cols) {
-          shiftLeftEnemy = 0;
-        }
-      }
+// function createEnemyFireBall() {
+//   for (let i = 0; i < enemyFireBallx.length; ++i) {
+//     if (enemyFireBallx[i] >= 0) {
+//       ctx.drawImage(
+//         fireball_image,
+//         enemyFireBallx[i] + 28,
+//         enemyFireBally[i] + 32,
+//         15,
+//         15
+//       );
+//       enemyFireBallx[i] -= 6;
+//     }
+
+//     if (enemyFireBallx[i] === playerX) {
+//       playerDead = true;
+//     }
+//   }
+// }
+
+let bullets = [];
+
+class Bullet {
+  constructor(x, y, sx, sy, dx, dy) {
+    this.position = { x, y };
+    this.bulletDirection = { dx, dy };
+    this.bulletSourceImage = { sx, sy };
+    this.bulletSpeed = 4;
+    this.size = { height: 50, width: 50 };
+    this.drawBullet();
+  }
+  checkOutOfBox() {
+    if (this.position.x > canvas.width) {
+      return true;
+    } else if (this.position.x < 0) {
+      return true;
+    } else if (this.position.y < 0) {
+      return true;
+    } else if (this.position.y > canvas.height) {
+      return true;
     } else {
-      if (delayEnemySprite % 10 === 0) {
-        shiftRightEnemy += enemyReverse.sw;
-        if (shiftRightEnemy >= enemyReverse.sw * enemyReverse.cols) {
-          shiftRightEnemy = 0;
-        }
-      }
-      ctx.drawImage(
-        player_image,
-        enemyReverse.sx + shiftRightEnemy,
-        enemyReverse.sy,
-        enemyReverse.sw,
-        enemyReverse.sh,
-        enemyX,
-        enemyY,
-        50,
-        100
-      );
-    }
-    delayEnemySprite++;
-  } else {
-    if (blastFlag) {
-      ctx.drawImage(blastImage, enemyX, enemyY, 50, 50);
-      blastFlag = false;
+      return false;
     }
   }
-
-  // setTimeout(() => {
-  //   enemyDead = false;
-  //   shiftRightEnemy = 0;
-  //   movingLeft = true;
-  //   enemyX = 920;
-  //   console.log("Hello");
-  //   enemyY = 0;
-  //   delayEnemySprite = 0;
-  //   blastFlag = 0;
-  //   shiftLeftEnemy = 0;
-  // }, 12000);
+  drawBullet() {
+    ctx.drawImage(
+      player_image,
+      this.bulletSourceImage.sx,
+      this.bulletSourceImage.sy,
+      10,
+      20,
+      this.position.x,
+      this.position.y,
+      this.size.width,
+      this.size.height
+    );
+  }
+  updatePosition() {
+    this.position = {
+      x: this.position.x + this.bulletSpeed * this.bulletDirection.dx,
+      y: this.position.y + this.bulletSpeed * this.bulletDirection.dy,
+    };
+  }
 }
-*/
+
 let enemyPosition = {
   sx: 190,
   sy: 43,
@@ -642,18 +616,20 @@ let enemyPosition = {
   cols: 5,
 };
 let enemyReverse = { sx: 228, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 };
-
+let cnnt = 0;
 class Enemy {
   constructor() {
+    this.counter = 0;
     this.position = { x: 920, y: 0 };
     this.size = { height: 80, width: 50 };
-    this.velocity = { x: -4, y: 0 };
+    this.velocity = { x: -3, y: 0 };
     this.baseLevel = canvas.height;
     this.shiftRightEnemy = 0;
     this.shiftLeftEnemy = 0;
     this.delayEnemySprite = 0;
     this.enemyDead = false;
     this.blastFlag = true;
+    this.id = "enemy";
   }
   drawEnemy() {
     if (!this.enemyDead) {
@@ -676,30 +652,57 @@ class Enemy {
       }
       this.delayEnemySprite++;
     } else {
-      if (blastFlag) {
+      if (this.blastFlag) {
         ctx.drawImage(blastImage, enemyX, enemyY, 50, 50);
-        blastFlag = false;
+        this.blastFlag = false;
       }
     }
   }
+  // create_fireball() {
+  //   for (let i = 0; i < fireball_x.length; ++i) {
+  //     ctx.drawImage(
+  //       fireball_image,
+  //       fireball_x[i] + 28,
+  //       fireball_y[i] + 32,
+  //       15,
+  //       15
+  //     );
+  //     if (face_gun[i] == 1) fireball_x[i] += 6;
+  //     else fireball_x[i] -= 6;
+  //     console.log(fireball_x[i], this.position.x);
+  //     if (fireball_x[i] === this.position.x) {
+  //       this.enemyDead = true;
+  //     }
+  //   }
+  // }
   updatePosition() {
     if (calculateGroundLevel(this.position.x, this.position.y) === 0) {
       this.velocity.y = 0;
     } else
       this.velocity.y += calculateGroundLevel(this.position.x, this.position.y);
 
-    console.log(this.position.x);
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
+    // if (this.velocity.y === 0) {
+    //   createEnemyFireBall();
+    // }
 
+    // if (this.velocity.y === 0) {
+    //   if (this.counter % 555 === 0) {
+    //     enemyFireBallx.push(this.position.x);
+    //     enemyFireBally.push(this.position.y);
+    //   }
+    //   this.counter++;
+    // }
     this.drawEnemy();
+    // this.create_fireball();
   }
 }
-
+// let bulettt = new Bullet();
+let enemyy = new Enemy();
 class Game {
   constructor() {
-    enemies.push(new Enemy());
-    setInterval(() => {
+    enemyInterval = setInterval(() => {
       enemies.push(new Enemy());
     }, 6500);
   }
@@ -708,9 +711,46 @@ class Game {
     enemies.forEach((enemy) => {
       enemy.updatePosition();
     });
+    bullets.forEach((bullet) => {
+      bullet.updatePosition();
+      bullet.drawBullet();
+    });
+    bullets = bullets.filter((bulettt) => {
+      enemies = enemies.filter((enemy) => {
+        //checking if the bullet hits the enemy with loop again at enemies
+        if (checkBulletCollision(bulettt, enemy)) {
+          console.log("he");
+          return null;
+        } else {
+          return enemy;
+        }
+      });
+      return bulettt;
+    });
   }
 }
+function checkBulletCollision(bullet, target) {
+  console.log("j");
+  if (bullet.shotBy != target.id) {
+    let x1 = bullet.position.x;
+    let y1 = bullet.position.y;
+    let w1 = bullet.size.width;
+    let h1 = bullet.size.height;
 
+    let x2 = target.position.x;
+    let y2 = target.position.y;
+    let h2 = target.size.height;
+    let w2 = target.size.width;
+
+    if (x2 > w1 + x1 || x1 > w2 + x2 || y2 > h1 + y1 || y1 > h2 + y2) {
+      return false;
+    } else {
+      return true;
+    }
+  } else {
+    return false;
+  }
+}
 addEventListener("keydown", move);
 addEventListener("keyup", move1);
 addEventListener("keyup", stop);
