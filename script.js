@@ -288,9 +288,9 @@ let player = {
 function drawPlayer() {
   if (!playerDead) {
     if (laying == 1 && facing == 1) {
-      ctx.drawImage(laying_img, playerX, playerY, 80, 80);
+      ctx.drawImage(laying_img, playerX, playerY + 25, 80, 80);
     } else if (laying == 1 && facing == 0) {
-      ctx.drawImage(reverse_laying_image, playerX, playerY, 80, 80);
+      ctx.drawImage(reverse_laying_image, playerX, playerY + 25, 80, 80);
     } else if (facing == 1) {
       if (startMoving === true) {
         if (playerCounter % 10 === 0) {
@@ -344,7 +344,6 @@ function drawPlayer() {
     }
   }
 }
-
 function blastBridge(playerX, playerY) {
   for (let i = 0; i < track.length; i++) {
     for (let j = 0; j < track[i].length; j++) {
@@ -414,8 +413,8 @@ function update() {
   create_diagonal_fireball();
   playerX += xv;
   playerY += yv;
-  if (playerX >= 550) {
-    playerX = 549;
+  if (playerX >= 350) {
+    playerX = 349;
     moveForward();
   }
   if (playerX <= 110) {
@@ -432,10 +431,10 @@ function update() {
   drawPlayer();
 }
 function move(event) {
-  if (event.key === "s") {
+  if (event.key === "s" || event.key === "ArrowDown") {
     laying = 1;
   }
-  if (event.key === "d") {
+  if (event.key === "d" || event.key === "ArrowRight") {
     if (framex < 2) framex++;
     else framex = 0;
     startMoving = true;
@@ -444,7 +443,7 @@ function move(event) {
     xv = 2;
     laying = 0;
   }
-  if (event.key === "a") {
+  if (event.key === "a" || event.key === "ArrowLeft") {
     if (framex < 2) framex++;
     else framex = 0;
     startMoving = true;
@@ -453,7 +452,7 @@ function move(event) {
     xv = -2;
     laying = 0;
   }
-  if (event.key === "w") {
+  if (event.key === "w" || event.key === "ArrowUp") {
     if (flag) {
       yv -= 15;
       flag = false;
@@ -462,13 +461,13 @@ function move(event) {
   }
 }
 function move1(event) {
-  if (event.key === "s") {
+  if (event.key === "s" || event.key === "ArrowDown") {
     if (laying == 0) laying = 1;
     else {
       laying = 0;
     }
   }
-  if (event.key === "q") {
+  if (event.key === "q" || event.key === "Enter") {
     let fire_audio = new Audio("audios/gun_sound.mp3");
     shoot();
   }
@@ -492,11 +491,11 @@ function move1(event) {
 
 }
 function stop(event) {
-  if (event.key === "d") {
+  if (event.key === "d" || event.key === "ArrowRight") {
     startMoving = false;
     xv = 0;
   }
-  if (event.key === "a") {
+  if (event.key === "a" || event.key === "ArrowLeft") {
     startMoving = false;
     xv = 0;
   }
@@ -511,7 +510,11 @@ function createNewBullet(x, y, { dx, dy, sx, sy }) {
 function shoot() {
   if (facing === 1) {
     bullets.push(
-      createNewBullet(playerX + 50, playerY + 20, shootBulletDirection.right)
+      createNewBullet(playerX, playerY, shootBulletDirection.right, "player")
+    );
+  } else if (facing === 0) {
+    bullets.push(
+      createNewBullet(playerX, playerY, shootBulletDirection.left, "player")
     );
   }
 }
@@ -519,12 +522,13 @@ function shoot() {
 let bullets = [];
 
 class Bullet {
-  constructor(x, y, sx, sy, dx, dy) {
+  constructor(x, y, sx, sy, dx, dy, shotBy) {
     this.position = { x, y };
     this.bulletDirection = { dx, dy };
     this.bulletSourceImage = { sx, sy };
     this.bulletSpeed = 4;
     this.size = { height: 50, width: 50 };
+    this.shotBy = shotBy;
     this.drawBullet();
   }
   checkOutOfBox() {
@@ -561,6 +565,12 @@ class Bullet {
   }
 }
 
+let playa = {
+  position: { x: playerX, y: playerY },
+  size: { height: 80, width: 50 },
+  id: "playa",
+};
+
 let enemyPosition = {
   sx: 190,
   sy: 43,
@@ -584,6 +594,7 @@ class Enemy {
     this.delayEnemySprite = 0;
     this.enemyDead = false;
     this.blastFlag = true;
+    this.counter = 1;
     this.id = "enemy";
   }
   drawEnemy() {
@@ -613,6 +624,14 @@ class Enemy {
       }
     }
   }
+  shoot() {
+    if (this.counter % 100 === 0) {
+      bullets.push(
+        new Bullet(this.position.x, this.position.y, 352, 0, -1, 0, "enemy")
+      );
+    }
+    this.counter++;
+  }
   updatePosition() {
     if (calculateGroundLevel(this.position.x, this.position.y) === 0) {
       this.velocity.y = 0;
@@ -622,6 +641,7 @@ class Enemy {
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
     this.drawEnemy();
+    this.shoot();
   }
 }
 let enemyy = new Enemy();
@@ -642,21 +662,26 @@ class Game {
     });
     bullets = bullets.filter((bulettt) => {
       enemies = enemies.filter((enemy) => {
-        //checking if the bullet hits the enemy with loop again at enemies
         if (checkBulletCollision(bulettt, enemy)) {
-          console.log("he");
           return null;
         } else {
           return enemy;
         }
       });
+      if (checkBulletCollision(bulettt, playa)) {
+        console.log("hello");
+        playerDead = true;
+      }
       return bulettt;
     });
   }
 }
 function checkBulletCollision(bullet, target) {
-  console.log("j");
+  if (target.id == "playa") {
+    console.log(target.position.x);
+  }
   if (bullet.shotBy != target.id) {
+    console.log("hejksfhkfsllo");
     let x1 = bullet.position.x;
     let y1 = bullet.position.y;
     let w1 = bullet.size.width;
@@ -676,6 +701,7 @@ function checkBulletCollision(bullet, target) {
     return false;
   }
 }
+
 addEventListener("keydown", move);
 addEventListener("keyup", move1);
 addEventListener("keyup", stop);
@@ -690,3 +716,4 @@ function startgame() {
   animation();
 }
 startgame();
+
