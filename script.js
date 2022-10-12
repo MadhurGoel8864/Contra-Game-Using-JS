@@ -29,6 +29,7 @@ const ctx = canvas.getContext("2d");
 canvas.width = 1024;
 canvas.height = 576;
 let enemyInterval;
+let score = 0;
 let ex = 700;
 let movingLeft = true;
 let ex1 = 1500;
@@ -51,6 +52,11 @@ const backHeight = window.innerHeight;
 const backWidth = window.innerWidth;
 shiftTrack = 0;
 shiftTrackBy = 2;
+let playa = {
+  position: { x: 200, y: 0 },
+  size: { height: 80, width: 50 },
+  id: "player",
+};
 
 const groundGravity = 0.5;
 
@@ -456,7 +462,8 @@ function update() {
   if (playerX <= 110) {
     playerX = 110;
   }
-
+  playa.position.x = playerX;
+  playa.position.y = playerY;
   if (calculateGroundLevel(playerX, playerY) === 0) {
     yv = 0;
     flag = true;
@@ -537,7 +544,12 @@ function createNewBullet(x, y, { dx, dy, sx, sy }) {
 function shoot() {
   if (facing === 1) {
     bullets.push(
-      createNewBullet(playerX, playerY, shootBulletDirection.right, "player")
+      createNewBullet(
+        playerX + 60,
+        playerY,
+        shootBulletDirection.right,
+        "player"
+      )
     );
   } else if (facing === 0) {
     bullets.push(
@@ -620,12 +632,6 @@ class Bullet {
 //     this.id = "playa";
 //   }
 // }
-
-let playa = {
-  position: { x: playerX, y: playerY },
-  size: { height: 80, width: 50 },
-  id: "playa",
-};
 
 let enemyPosition = {
   sx: 190,
@@ -735,7 +741,7 @@ class Game {
   constructor() {
     enemyInterval = setInterval(() => {
       enemies.push(new Enemy());
-    }, 6500);
+    }, 5500);
   }
   playGame() {
     update();
@@ -749,6 +755,8 @@ class Game {
     bullets = bullets.filter((bulettt) => {
       enemies = enemies.filter((enemy) => {
         if (checkBulletCollision(bulettt, enemy)) {
+          score++;
+          console.log(score);
           return null;
         } else {
           return enemy;
