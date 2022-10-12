@@ -439,6 +439,9 @@ function game_start() {
         moveForward();
       }
     }
+    else {
+      if (playerX >= 920) playerX = 919;
+    }
     if (playerX <= 110) {
       playerX = 110;
     }
