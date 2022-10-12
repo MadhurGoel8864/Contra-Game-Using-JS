@@ -47,7 +47,7 @@ let laying = 0;
 let enemyXVelo = 0;
 let enemyYVelo = 0;
 let enemies = [];
-let onWater = false;
+let lives = 5;
 const backHeight = window.innerHeight;
 const backWidth = window.innerWidth;
 shiftTrack = 0;
@@ -558,25 +558,6 @@ function shoot() {
   }
 }
 
-// function createEnemyFireBall() {
-//   for (let i = 0; i < enemyFireBallx.length; ++i) {
-//     if (enemyFireBallx[i] >= 0) {
-//       ctx.drawImage(
-//         fireball_image,
-//         enemyFireBallx[i] + 28,
-//         enemyFireBally[i] + 32,
-//         15,
-//         15
-//       );
-//       enemyFireBallx[i] -= 6;
-//     }
-
-//     if (enemyFireBallx[i] === playerX) {
-//       playerDead = true;
-//     }
-//   }
-// }
-
 let bullets = [];
 
 class Bullet {
@@ -622,16 +603,6 @@ class Bullet {
     };
   }
 }
-
-// class Player {
-//   constructor() {
-//     console.log(playerX);
-//     this.position.x = playerX;
-//     this.position.y = playerY;
-//     this.size = { height: 80, width: 50 };
-//     this.id = "playa";
-//   }
-// }
 
 let enemyPosition = {
   sx: 190,
@@ -694,23 +665,6 @@ class Enemy {
     }
     this.counter++;
   }
-  // create_fireball() {
-  //   for (let i = 0; i < fireball_x.length; ++i) {
-  //     ctx.drawImage(
-  //       fireball_image,
-  //       fireball_x[i] + 28,
-  //       fireball_y[i] + 32,
-  //       15,
-  //       15
-  //     );
-  //     if (face_gun[i] == 1) fireball_x[i] += 6;
-  //     else fireball_x[i] -= 6;
-  //     console.log(fireball_x[i], this.position.x);
-  //     if (fireball_x[i] === this.position.x) {
-  //       this.enemyDead = true;
-  //     }
-  //   }
-  // }
   updatePosition() {
     if (calculateGroundLevel(this.position.x, this.position.y) === 0) {
       this.velocity.y = 0;
@@ -719,23 +673,10 @@ class Enemy {
 
     this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
-    // if (this.velocity.y === 0) {
-    //   createEnemyFireBall();
-    // }
-
-    // if (this.velocity.y === 0) {
-    //   if (this.counter % 555 === 0) {
-    //     enemyFireBallx.push(this.position.x);
-    //     enemyFireBally.push(this.position.y);
-    //   }
-    //   this.counter++;
-    // }
     this.drawEnemy();
     this.shoot();
-    // this.create_fireball();
   }
 }
-// let bulettt = new Bullet();
 let enemyy = new Enemy();
 class Game {
   constructor() {
@@ -765,6 +706,15 @@ class Game {
       if (checkBulletCollision(bulettt, playa)) {
         console.log("hello");
         playerDead = true;
+        lives--;
+        if (lives > 0) {
+          playerX = 220;
+          playerY = 0;
+          playa.position.x = playerX;
+          playa.position.y = playerY;
+          playerDead = false;
+          blastPlayer = true;
+        }
       }
       return bulettt;
     });
