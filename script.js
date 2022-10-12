@@ -397,25 +397,6 @@ function calculateGroundLevel(playerX, playerY) {
     return groundGravity;
   }
 }
-/*
-function create_fireball() {
-  for (let i = 0; i < fireball_x.length; ++i) {
-    ctx.drawImage(
-      fireball_image,
-      fireball_x[i] + 28,
-      fireball_y[i] + 32,
-      15,
-      15
-    );
-    if (face_gun[i] == 1) fireball_x[i] += 6;
-    else fireball_x[i] -= 6;
-    console.log(fireball_x[i], enemyy.position.x);
-    if (fireball_x[i] === enemyy.position.x) {
-      enemyDead = true;
-    }
-  }
-}
-*/
 function create_diagonal_fireball() {
   for (let i = 0; i < diagonal_fireball_x.length; i++) {
     ctx.drawImage(
@@ -434,21 +415,6 @@ function create_diagonal_fireball() {
     }
   }
 }
-// function createEnemyFireBall() {
-//   for (let i = 0; i < enemyFireBallx.length; ++i) {
-//     ctx.drawImage(
-//       fireball_image,
-//       enemyFireBallx[i] + 28,
-//       enemyFireBally[i] + 32,
-//       15,
-//       15
-//     );
-//     enemyFireBallx[i] -= 6;
-//     if (enemyFireBallx[i] === playerX) {
-//       playerDead = true;
-//     }
-//   }
-// }
 let counter = 0;
 function update() {
   drawPlatform();
@@ -714,7 +680,7 @@ class Game {
       if (checkBulletCollision(bulettt, playa)) {
         console.log("hello");
         playerDead = true;
-        if (delayInReSpawn % 30 === 0) {
+        if (delayInReSpawn % 10 === 0) {
           lives--;
           if (lives > 0) {
             playerX = 0;
