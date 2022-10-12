@@ -704,7 +704,7 @@ function game_start() {
         });
         if (checkBulletCollision(bulettt, playa)) {
           playerDead = true;
-          if (delayInReSpawn % 30 === 0) {
+          if (delayInReSpawn % 5 === 0) {
             lives--;
             // document.querySelector('.scoreUpdate').textContent = score;
             document.getElementById("livesUpdate").textContent = lives;
@@ -766,5 +766,5 @@ function game_start() {
     animation();
   }
   startgame();
-
 }
+
