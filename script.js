@@ -572,6 +572,9 @@ class Bullet {
     this.size = { height: 50, width: 50 };
     this.shotBy = shotBy;
     this.drawBullet();
+    if (laying) {
+      this.position.y += 55;
+    }
   }
   drawBullet() {
     if (laying == 1) {
