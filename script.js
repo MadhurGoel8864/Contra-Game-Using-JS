@@ -48,6 +48,7 @@ let enemyXVelo = 0;
 let enemyYVelo = 0;
 let enemies = [];
 let lives = 5;
+let jumpPlayer = false;
 const backHeight = window.innerHeight;
 const backWidth = window.innerWidth;
 shiftTrack = 0;
@@ -57,7 +58,7 @@ let playa = {
   size: { height: 80, width: 50 },
   id: "player",
 };
-
+let shiftJump = 0;
 const groundGravity = 0.5;
 
 const image = new Image();
@@ -152,18 +153,18 @@ track = [
   ],
   [
     9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9,
-    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 9, 9, 9, 9, 9, 9, 9, 9,
+    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 9, 9, 9, 9, 9, 2, 2, 2,
+    2, 9, 9, 9, 9, 9, 9, 9,
+  ],
+  [
+    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 9, 2, 2, 2, 9, 9, 9,
+    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 2, 9, 9, 9,
     9, 9, 9, 9, 9, 9, 9, 9,
   ],
   [
-    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-  ],
-  [
-    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
+    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9,
+    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
+    9, 9, 9, 9, 9, 9, 9, 9,
   ],
   [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -290,14 +291,35 @@ let playerCounter = 0;
 let player = {
   running: { sx: 0, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 },
   runningReverse: { sx: 397, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 },
+  jump: { sx: 116, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 4 },
 };
 function drawPlayer() {
   if (!playerDead) {
-    if (laying == 1 && facing == 1) {
+    if (jumpPlayer) {
+      console.log("heelo");
+      if (playerCounter % 10 === 0) {
+        shiftJump += player.jump.sw;
+        if (shiftJump >= player.jump.sw * player.jump.cols) {
+          shiftJump = 0;
+        }
+      }
+      ctx.drawImage(
+        player_image,
+        player.jump.sx + shiftJump,
+        player.jump.sy,
+        player.jump.sw,
+        player.jump.sh,
+        playerX,
+        playerY,
+        80,
+        50
+      );
+      playerCounter++;
+    } else if (laying == 1 && facing == 1 && !jumpPlayer) {
       ctx.drawImage(laying_img, playerX, playerY + 60, 100, 50);
-    } else if (laying == 1 && facing == 0) {
+    } else if (laying == 1 && facing == 0 && !jumpPlayer) {
       ctx.drawImage(reverse_laying_image, playerX, playerY + 60, 100, 50);
-    } else if (facing == 1) {
+    } else if (facing == 1 && !jumpPlayer) {
       if (startMoving === true) {
         if (playerCounter % 10 === 0) {
           playerShiftLeft += player.running.sw;
@@ -318,7 +340,7 @@ function drawPlayer() {
         100
       );
       playerCounter++;
-    } else if (facing == 0) {
+    } else if (facing == 0 && !jumpPlayer) {
       if (startMoving === true) {
         if (playerCounter % 10 === 0) {
           playerShiftRight += player.runningReverse.sw;
@@ -376,7 +398,7 @@ function calculateGroundLevel(playerX, playerY) {
   for (let i = 0; i < track.length; i++) {
     for (let j = 0; j < track[i].length; j++) {
       let trackPosition = { x: j * 60, y: i * 60 };
-      if (track[i][j] > 1) {
+      if (track[i][j] === 2 || track[i][j] === 8) {
         if (
           playerX + 80 >= trackPosition.x &&
           playerX <= trackPosition.x + 60 &&
@@ -434,6 +456,10 @@ function update() {
   if (playerX <= 110) {
     playerX = 110;
   }
+  if (playerY >= 479) {
+    playerDead = true;
+    reSpawn();
+  }
   playa.position.x = playerX;
   playa.position.y = playerY;
   if (calculateGroundLevel(playerX, playerY) === 0) {
@@ -442,11 +468,14 @@ function update() {
   } else yv += calculateGroundLevel(playerX, playerY);
 
   blastBridge(playerX, playerY);
-
+  if (playerY + 100 >= ground) {
+    jumpPlayer = false;
+  }
   drawPlayer();
 }
 function move(event) {
-  if (event.key === "d") {
+  if (event.key === "d" && !startMoving) {
+    console.log("d is pressed");
     startMoving = true;
     facing = 1;
     diagonal_facing = 1;
@@ -454,7 +483,7 @@ function move(event) {
     laying = 0;
     console.log("I am pressed");
   }
-  if (event.key === "a") {
+  if (event.key === "a" && !startMoving) {
     if (framex < 2) framex++;
     else framex = 0;
     startMoving = true;
@@ -465,12 +494,15 @@ function move(event) {
   }
   if (event.key === "w") {
     if (flag) {
-      yv -= 15;
+      yv -= 10;
+      jumpPlayer = true;
       flag = false;
     }
     laying = 0;
   }
-  if (event.key === "s" && !startMoving) {
+  if (event.key === "s") {
+    startMoving = true;
+    xv = 0;
     console.log("s is pressed");
     if (laying == 0) laying = 1;
   }
@@ -496,7 +528,8 @@ function stop(event) {
     xv = 0;
   }
   if (event.key === "s") {
-    // startMoving = false;
+    laying = 0;
+    startMoving = false;
   }
 }
 let shootBulletDirection = {
@@ -667,24 +700,27 @@ class Game {
       if (checkBulletCollision(bulettt, playa)) {
         console.log("hello");
         playerDead = true;
-        if (delayInReSpawn % 3 === 0) {
-          lives--;
-          if (lives > 0) {
-            playerX = 0;
-            playerY = 0;
-            playa.position.x = playerX;
-            playa.position.y = playerY;
-            playerDead = false;
-            blastPlayer = true;
-          } else {
-            console.log("GAMEOVER");
-            clearInterval(enemyInterval);
-          }
-        }
+        reSpawn();
       }
       return bulettt;
     });
     delayInReSpawn++;
+  }
+}
+function reSpawn() {
+  if (delayInReSpawn % 3 === 0) {
+    lives--;
+    if (lives > 0) {
+      playerX = 0;
+      playerY = 0;
+      playa.position.x = playerX;
+      playa.position.y = playerY;
+      playerDead = false;
+      blastPlayer = true;
+    } else {
+      console.log("GAMEOVER");
+      clearInterval(enemyInterval);
+    }
   }
 }
 function checkBulletCollision(bullet, target) {
