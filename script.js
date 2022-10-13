@@ -4,14 +4,15 @@ let rules = document.getElementById("rules");
 let controls = document.getElementById("controls");
 let rules_display_condition = 0;
 let scores = document.getElementById("score");
-let status = 1;
 rules.addEventListener("click", rules_display);
 function rules_display() {
-  if (rules_display_condition == 0) rules_display_condition = 1;
+  if (rules_display_condition == 0)
+    rules_display_condition = 1;
   else {
     rules_display_condition = 0;
   }
-  if (rules_display_condition == 1) controls.style.display = "flex";
+  if (rules_display_condition == 1)
+    controls.style.display = "flex";
   else {
     controls.style.display = "none";
   }
@@ -32,31 +33,31 @@ function game_start() {
   const canvas = document.getElementById("myCanvas");
   const ctx = canvas.getContext("2d");
 
-  canvas.width = 1024;
+  canvas.width = window.innerWidth;
   canvas.height = 576;
   let enemyInterval;
   let score = 0;
-  let ex = 700;
-  let movingLeft = true;
-  let ex1 = 1500;
-  let ex2 = 1100;
-  let ey = canvas.height / 2 - 10;
-  let playerX = 200;
+  // let ex = 700;
+  // let movingLeft = true;
+  // let ex1 = 1500;
+  // let ex2 = 1100;
+  // let ey = canvas.height / 2 - 10;
+  let playerX = 100;
   let playerY = 0;
   let xv = 0;
   let yv = 0;
-  let platX = 0;
-  let platY = 100;
+  // let platX = 0;
+  // let platY = 100;
   let flag = true;
   let ground = canvas.height;
   let laying = 0;
-  let enemyXVelo = 0;
-  let enemyYVelo = 0;
+  // let enemyXVelo = 0;
+  // let enemyYVelo = 0;
   let enemies = [];
   let lives = 5;
   let jumpPlayer = false;
-  const backHeight = window.innerHeight;
-  const backWidth = window.innerWidth;
+  // const backHeight = window.innerHeight;
+  // const backWidth = window.innerWidth;
   shiftTrack = 0;
   shiftTrackBy = 2;
   let playa = {
@@ -84,30 +85,30 @@ function game_start() {
   reverseEnemy.src = "img/playerreverse.png";
   const blastImage = new Image();
   blastImage.src = "img/blastimage.png";
-  const player_sprite_width = 25;
-  const player_sprite_height = 35;
-  const reversed_player_sprite_width = 26;
-  const reversed_player_sprite_height = 35;
-  let a = 0;
-  let b = 0;
+  // const player_sprite_width = 25;
+  // const player_sprite_height = 35;
+  // const reversed_player_sprite_width = 26;
+  // const reversed_player_sprite_height = 35;
+  // let a = 0;
+  // let b = 0;
   let framex = 0;
-  let framey = 0;
+  // let framey = 0;
   let facing = 1;
   let diagonal_facing = 1;
-  let rotate_angle = 180;
-  let cnt = 0;
-  let fireball_x = [];
-  let fireball_y = [];
+  // let rotate_angle = 180;
+  // let cnt = 0;
+  // let fireball_x = [];
+  // let fireball_y = [];
   let diagonal_fireball_x = [];
   let diagonal_fireball_y = [];
-  let enemyFireBallx = [];
-  let enemyFireBally = [];
-  let enemyFaceGun = [];
-  let face_gun = [];
+  // let enemyFireBallx = [];
+  // let enemyFireBally = [];
+  // let enemyFaceGun = [];
+  // let face_gun = [];
   let diagonal_face_gun = [];
   let enemyX = 820;
   let enemyY = 0;
-  let bridgeDissapear = false;
+  // let bridgeDissapear = false;
   let trackImage = {
     road: { sx: 100, sy: 100, sw: 60, sh: 60 },
     grass: { sx: 100, sy: 65, sw: 70, sh: 30 },
@@ -303,7 +304,7 @@ function game_start() {
     if (!playerDead) {
       if (jumpPlayer) {
         console.log("heelo");
-        if (playerCounter % 10 === 0) {
+        if (playerCounter % 5 === 0) {
           shiftJump += player.jump.sw;
           if (shiftJump >= player.jump.sw * player.jump.cols) {
             shiftJump = 0;
@@ -443,7 +444,7 @@ function game_start() {
       }
     }
   }
-  let counter = 0;
+  // let counter = 0;
   function update() {
     drawPlatform();
     create_diagonal_fireball();
@@ -454,9 +455,10 @@ function game_start() {
         playerX = 349;
         moveForward();
       }
-    } else {
-      if (playerX >= 920) {
-        playerX = 920;
+    }
+    else {
+      if (playerX >= window.innerWidth - 200) {
+        playerX = window.innerWidth - 200 - 1;
       }
     }
     if (playerX <= 110) {
@@ -616,8 +618,8 @@ function game_start() {
     dw: 50,
     cols: 5,
   };
-  let enemyReverse = { sx: 228, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 };
-  let cnnt = 0;
+  // let enemyReverse = { sx: 228, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 };
+  // let cnnt = 0;
   class Enemy {
     constructor() {
       this.counter = 0;
@@ -770,6 +772,7 @@ function game_start() {
   function startgame() {
     let gg = new Game();
     function animation() {
+      console.log(playerY);
       if (score < 5 && lives > 0) {
         requestAnimationFrame(animation);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
