@@ -152,18 +152,18 @@ track = [
   ],
   [
     9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9,
-    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 9, 9, 9, 9, 9, 9, 9, 9,
+    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 9, 9, 9, 9, 9, 2, 2, 2,
+    2, 9, 9, 9, 9, 9, 9, 9,
+  ],
+  [
+    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 9, 2, 2, 2, 9, 9, 9,
+    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 2, 9, 9, 9,
     9, 9, 9, 9, 9, 9, 9, 9,
   ],
   [
-    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
-  ],
-  [
-    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0,
+    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9,
+    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
+    9, 9, 9, 9, 9, 9, 9, 9,
   ],
   [
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -376,7 +376,7 @@ function calculateGroundLevel(playerX, playerY) {
   for (let i = 0; i < track.length; i++) {
     for (let j = 0; j < track[i].length; j++) {
       let trackPosition = { x: j * 60, y: i * 60 };
-      if (track[i][j] > 1) {
+      if (track[i][j] === 2 || track[i][j] === 8) {
         if (
           playerX + 80 >= trackPosition.x &&
           playerX <= trackPosition.x + 60 &&
@@ -446,7 +446,8 @@ function update() {
   drawPlayer();
 }
 function move(event) {
-  if (event.key === "d") {
+  if (event.key === "d" && !startMoving) {
+    console.log("d is pressed");
     startMoving = true;
     facing = 1;
     diagonal_facing = 1;
@@ -454,7 +455,7 @@ function move(event) {
     laying = 0;
     console.log("I am pressed");
   }
-  if (event.key === "a") {
+  if (event.key === "a" && !startMoving) {
     if (framex < 2) framex++;
     else framex = 0;
     startMoving = true;
@@ -465,12 +466,14 @@ function move(event) {
   }
   if (event.key === "w") {
     if (flag) {
-      yv -= 15;
+      yv -= 10;
       flag = false;
     }
     laying = 0;
   }
-  if (event.key === "s" && !startMoving) {
+  if (event.key === "s") {
+    startMoving = true;
+    xv = 0;
     console.log("s is pressed");
     if (laying == 0) laying = 1;
   }
@@ -496,7 +499,8 @@ function stop(event) {
     xv = 0;
   }
   if (event.key === "s") {
-    // startMoving = false;
+    laying = 0;
+    startMoving = false;
   }
 }
 let shootBulletDirection = {
