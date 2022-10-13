@@ -9,10 +9,33 @@ body {
   height: 100vh;
 }
 
+#win_display {
+  font-size: 90px;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin-top: 13%;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+#Reload {
+  color: rgb(188, 230, 230);
+  align-items: center;
+  font-size: 30px;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+}
+
 #myCanvas {
   display: none;
+  justify-content: center;
+  align-items: center;
   margin-left: 15%;
-  margin-top: 10%;
+  margin-top: 0%;
 }
 
 #options {
@@ -22,7 +45,18 @@ body {
 }
 
 #logo {
-  width: 570px;
+  width: 450px;
+}
+
+#scoreUpdate {
+  margin-right: 55%;
+}
+
+#score {
+  color: beige;
+  font-size: 40px;
+  margin-left: 15%;
+  padding-top: 2%;
 }
 
 #start_btn {
@@ -33,7 +67,7 @@ body {
   font-size: 20px;
   background-color: rgb(255, 0, 0);
   border-radius: 20px;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
 }
 
 #start_btn:hover {
@@ -53,7 +87,7 @@ body {
   height: 40px;
   font-size: 18px;
   border-radius: 20px;
-  margin-bottom: 40px;
+  margin-bottom: 25px;
 }
 
 #rules:hover {
@@ -81,4 +115,11 @@ body {
 #rules_display {
   color: azure;
   margin-bottom: 30px;
+}
+
+#win_message {
+  display: none;
+  flex-direction: column;
+  color: rgb(0, 251, 17);
+
 }
