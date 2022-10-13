@@ -434,6 +434,10 @@ function update() {
   if (playerX <= 110) {
     playerX = 110;
   }
+  if (playerY >= 479) {
+    playerDead = true;
+    reSpawn();
+  }
   playa.position.x = playerX;
   playa.position.y = playerY;
   if (calculateGroundLevel(playerX, playerY) === 0) {
@@ -671,24 +675,27 @@ class Game {
       if (checkBulletCollision(bulettt, playa)) {
         console.log("hello");
         playerDead = true;
-        if (delayInReSpawn % 3 === 0) {
-          lives--;
-          if (lives > 0) {
-            playerX = 0;
-            playerY = 0;
-            playa.position.x = playerX;
-            playa.position.y = playerY;
-            playerDead = false;
-            blastPlayer = true;
-          } else {
-            console.log("GAMEOVER");
-            clearInterval(enemyInterval);
-          }
-        }
+        reSpawn();
       }
       return bulettt;
     });
     delayInReSpawn++;
+  }
+}
+function reSpawn() {
+  if (delayInReSpawn % 3 === 0) {
+    lives--;
+    if (lives > 0) {
+      playerX = 0;
+      playerY = 0;
+      playa.position.x = playerX;
+      playa.position.y = playerY;
+      playerDead = false;
+      blastPlayer = true;
+    } else {
+      console.log("GAMEOVER");
+      clearInterval(enemyInterval);
+    }
   }
 }
 function checkBulletCollision(bullet, target) {
