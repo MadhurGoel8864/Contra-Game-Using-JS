@@ -296,7 +296,7 @@ function drawPlayer() {
     if (laying == 1 && facing == 1) {
       ctx.drawImage(laying_img, playerX, playerY + 60, 100, 50);
     } else if (laying == 1 && facing == 0) {
-      ctx.drawImage(reverse_laying_image, playerX, playerY, 80, 80);
+      ctx.drawImage(reverse_laying_image, playerX, playerY + 60, 100, 50);
     } else if (facing == 1) {
       if (startMoving === true) {
         if (playerCounter % 10 === 0) {
@@ -444,20 +444,15 @@ function update() {
   blastBridge(playerX, playerY);
 
   drawPlayer();
-  // drawEnemy();
 }
 function move(event) {
-  if (event.key === "s") {
-    laying = 1;
-  }
   if (event.key === "d") {
-    if (framex < 2) framex++;
-    else framex = 0;
     startMoving = true;
     facing = 1;
     diagonal_facing = 1;
     xv = 2;
     laying = 0;
+    console.log("I am pressed");
   }
   if (event.key === "a") {
     if (framex < 2) framex++;
@@ -475,19 +470,14 @@ function move(event) {
     }
     laying = 0;
   }
-}
-function move1(event) {
-  if (event.key === "s") {
+  if (event.key === "s" && !startMoving) {
+    console.log("s is pressed");
     if (laying == 0) laying = 1;
-    else {
-      laying = 0;
-    }
   }
-  if (event.key === "q") {
+  if (event.key == "q") {
     let fire_audio = new Audio("audios/gun_sound.mp3");
     shoot();
   }
-
   if (event.key === "e") {
     let fire_audio = new Audio("audios/gun_sound.mp3");
     fire_audio.play();
@@ -504,6 +494,9 @@ function stop(event) {
   if (event.key === "a") {
     startMoving = false;
     xv = 0;
+  }
+  if (event.key === "s") {
+    // startMoving = false;
   }
 }
 let shootBulletDirection = {
@@ -547,20 +540,10 @@ class Bullet {
     this.shotBy = shotBy;
     this.drawBullet();
   }
-  checkOutOfBox() {
-    if (this.position.x > canvas.width) {
-      return true;
-    } else if (this.position.x < 0) {
-      return true;
-    } else if (this.position.y < 0) {
-      return true;
-    } else if (this.position.y > canvas.height) {
-      return true;
-    } else {
-      return false;
-    }
-  }
   drawBullet() {
+    if (laying == 1) {
+      this.position.y;
+    }
     ctx.drawImage(
       player_image,
       this.bulletSourceImage.sx,
@@ -684,7 +667,7 @@ class Game {
       if (checkBulletCollision(bulettt, playa)) {
         console.log("hello");
         playerDead = true;
-        if (delayInReSpawn % 10 === 0) {
+        if (delayInReSpawn % 3 === 0) {
           lives--;
           if (lives > 0) {
             playerX = 0;
@@ -733,7 +716,6 @@ function checkBulletCollision(bullet, target) {
   }
 }
 addEventListener("keydown", move);
-addEventListener("keyup", move1);
 addEventListener("keyup", stop);
 
 function startgame() {
