@@ -48,6 +48,7 @@ let enemyXVelo = 0;
 let enemyYVelo = 0;
 let enemies = [];
 let lives = 5;
+let jumpPlayer = false;
 const backHeight = window.innerHeight;
 const backWidth = window.innerWidth;
 shiftTrack = 0;
@@ -57,7 +58,7 @@ let playa = {
   size: { height: 80, width: 50 },
   id: "player",
 };
-
+let shiftJump = 0;
 const groundGravity = 0.5;
 
 const image = new Image();
@@ -290,14 +291,35 @@ let playerCounter = 0;
 let player = {
   running: { sx: 0, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 },
   runningReverse: { sx: 397, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 },
+  jump: { sx: 116, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 4 },
 };
 function drawPlayer() {
   if (!playerDead) {
-    if (laying == 1 && facing == 1) {
+    if (jumpPlayer) {
+      console.log("heelo");
+      if (playerCounter % 10 === 0) {
+        shiftJump += player.jump.sw;
+        if (shiftJump >= player.jump.sw * player.jump.cols) {
+          shiftJump = 0;
+        }
+      }
+      ctx.drawImage(
+        player_image,
+        player.jump.sx + shiftJump,
+        player.jump.sy,
+        player.jump.sw,
+        player.jump.sh,
+        playerX,
+        playerY,
+        80,
+        50
+      );
+      playerCounter++;
+    } else if (laying == 1 && facing == 1 && !jumpPlayer) {
       ctx.drawImage(laying_img, playerX, playerY + 60, 100, 50);
-    } else if (laying == 1 && facing == 0) {
+    } else if (laying == 1 && facing == 0 && !jumpPlayer) {
       ctx.drawImage(reverse_laying_image, playerX, playerY + 60, 100, 50);
-    } else if (facing == 1) {
+    } else if (facing == 1 && !jumpPlayer) {
       if (startMoving === true) {
         if (playerCounter % 10 === 0) {
           playerShiftLeft += player.running.sw;
@@ -318,7 +340,7 @@ function drawPlayer() {
         100
       );
       playerCounter++;
-    } else if (facing == 0) {
+    } else if (facing == 0 && !jumpPlayer) {
       if (startMoving === true) {
         if (playerCounter % 10 === 0) {
           playerShiftRight += player.runningReverse.sw;
@@ -446,7 +468,9 @@ function update() {
   } else yv += calculateGroundLevel(playerX, playerY);
 
   blastBridge(playerX, playerY);
-
+  if (playerY + 100 >= ground) {
+    jumpPlayer = false;
+  }
   drawPlayer();
 }
 function move(event) {
@@ -471,6 +495,7 @@ function move(event) {
   if (event.key === "w") {
     if (flag) {
       yv -= 10;
+      jumpPlayer = true;
       flag = false;
     }
     laying = 0;
