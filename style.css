@@ -10,7 +10,6 @@ body {
 }
 
 #win_display {
-  color: rgb(0, 251, 17);
   font-size: 90px;
   font-family: Georgia, 'Times New Roman', Times, serif;
   align-items: center;
@@ -35,7 +34,7 @@ body {
   display: none;
   justify-content: center;
   align-items: center;
-  margin-left: 15%;
+  /* margin-left: 15%; */
   margin-top: 0%;
 }
 
@@ -49,7 +48,7 @@ body {
   width: 450px;
 }
 
-.scoreUpdate {
+#scoreUpdate {
   margin-right: 55%;
 }
 
@@ -121,4 +120,6 @@ body {
 #win_message {
   display: none;
   flex-direction: column;
+  color: rgb(0, 251, 17);
+
 }

@@ -4,14 +4,15 @@ let rules = document.getElementById("rules");
 let controls = document.getElementById("controls");
 let rules_display_condition = 0;
 let scores = document.getElementById("score");
-let status = 1;
 rules.addEventListener("click", rules_display);
 function rules_display() {
-  if (rules_display_condition == 0) rules_display_condition = 1;
+  if (rules_display_condition == 0)
+    rules_display_condition = 1;
   else {
     rules_display_condition = 0;
   }
-  if (rules_display_condition == 1) controls.style.display = "flex";
+  if (rules_display_condition == 1)
+    controls.style.display = "flex";
   else {
     controls.style.display = "none";
   }
@@ -32,8 +33,8 @@ function game_start() {
   const canvas = document.getElementById("myCanvas");
   const ctx = canvas.getContext("2d");
 
-  canvas.width = 1024;
-  canvas.height = 776;
+  canvas.width = window.innerWidth;
+  canvas.height = 576;
   let enemyInterval;
   let score = 0;
   let ex = 700;
@@ -41,7 +42,7 @@ function game_start() {
   let ex1 = 1500;
   let ex2 = 1100;
   let ey = canvas.height / 2 - 10;
-  let playerX = 200;
+  let playerX = 100;
   let playerY = 0;
   let xv = 0;
   let yv = 0;
@@ -54,6 +55,7 @@ function game_start() {
   let enemyYVelo = 0;
   let enemies = [];
   let lives = 5;
+  let jumpPlayer = false;
   const backHeight = window.innerHeight;
   const backWidth = window.innerWidth;
   shiftTrack = 0;
@@ -63,7 +65,7 @@ function game_start() {
     size: { height: 80, width: 50 },
     id: "player",
   };
-
+  let shiftJump = 0;
   const groundGravity = 0.5;
 
   const image = new Image();
@@ -104,6 +106,7 @@ function game_start() {
   let enemyFaceGun = [];
   let face_gun = [];
   let diagonal_face_gun = [];
+  let reSpawnCounter = 0;
   let enemyX = 820;
   let enemyY = 0;
   let bridgeDissapear = false;
@@ -158,18 +161,18 @@ function game_start() {
     ],
     [
       9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9,
-      9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 9, 9, 9, 9, 9, 9, 9, 9,
+      9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 9, 9, 9, 9, 9, 2, 2, 2,
+      2, 9, 9, 9, 9, 9, 9, 9,
+    ],
+    [
+      9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 9, 2, 2, 2, 9, 9, 9,
+      9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 2, 9, 9, 9,
       9, 9, 9, 9, 9, 9, 9, 9,
     ],
     [
-      9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0,
-    ],
-    [
-      9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0,
+      9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9,
+      9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9,
+      9, 9, 9, 9, 9, 9, 9, 9,
     ],
     [
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -296,14 +299,61 @@ function game_start() {
   let player = {
     running: { sx: 0, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 },
     runningReverse: { sx: 397, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 },
+    jump: { sx: 116, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 4 },
+    water: { sx: 86, sy: 280, sh: 36, sw: 19, dh: 80, dw: 50, cols: 1 },
+    reverseWater: { sx: 311, sy: 280, sh: 36, sw: 19, dh: 80, dw: 50, cols: 1 },
   };
   function drawPlayer() {
     if (!playerDead) {
-      if (laying == 1 && facing == 1) {
-        ctx.drawImage(laying_img, playerX, playerY + 40, 80, 80);
-      } else if (laying == 1 && facing == 0) {
-        ctx.drawImage(reverse_laying_image, playerX, playerY + 40, 80, 80);
-      } else if (facing == 1) {
+      if (jumpPlayer) {
+        console.log("heelo");
+        if (playerCounter % 10 === 0) {
+          shiftJump += player.jump.sw;
+          if (shiftJump >= player.jump.sw * player.jump.cols) {
+            shiftJump = 0;
+          }
+        }
+        ctx.drawImage(
+          player_image,
+          player.jump.sx + shiftJump,
+          player.jump.sy,
+          player.jump.sw,
+          player.jump.sh,
+          playerX,
+          playerY,
+          80,
+          50
+        );
+        playerCounter++;
+      } else if (onWater && facing == 1) {
+        ctx.drawImage(
+          player_image,
+          player.water.sx,
+          player.water.sy,
+          player.water.sw,
+          player.water.sh,
+          playerX,
+          playerY,
+          80,
+          100
+        );
+      } else if (onWater && facing == 0) {
+        ctx.drawImage(
+          reverseEnemy,
+          player.reverseWater.sx,
+          player.reverseWater.sy,
+          player.reverseWater.sw,
+          player.reverseWater.sh,
+          playerX,
+          playerY,
+          80,
+          100
+        );
+      } else if (laying == 1 && facing == 1 && !jumpPlayer) {
+        ctx.drawImage(laying_img, playerX, playerY + 60, 100, 50);
+      } else if (laying == 1 && facing == 0 && !jumpPlayer) {
+        ctx.drawImage(reverse_laying_image, playerX, playerY + 60, 100, 50);
+      } else if (facing == 1 && !jumpPlayer) {
         if (startMoving === true) {
           if (playerCounter % 10 === 0) {
             playerShiftLeft += player.running.sw;
@@ -324,7 +374,7 @@ function game_start() {
           100
         );
         playerCounter++;
-      } else if (facing == 0) {
+      } else if (facing == 0 && !jumpPlayer) {
         if (startMoving === true) {
           if (playerCounter % 10 === 0) {
             playerShiftRight += player.runningReverse.sw;
@@ -356,6 +406,7 @@ function game_start() {
       }
     }
   }
+
   function blastBridge(playerX, playerY) {
     for (let i = 0; i < track.length; i++) {
       for (let j = 0; j < track[i].length; j++) {
@@ -368,8 +419,27 @@ function game_start() {
             playerY + 80 >= trackPosition.y - 30
           ) {
             track[i][j] = 0;
-            onWater = true;
             ctx.drawImage(blastImage, trackPosition.x, trackPosition.y, 50, 50);
+          }
+        }
+        if (track[i][j] === 8) {
+          if (
+            playerX + 80 >= trackPosition.x &&
+            playerX <= trackPosition.x + 60 &&
+            playerY + 80 <= trackPosition.y &&
+            playerY + 80 >= trackPosition.y - 30
+          ) {
+            onWater = true;
+          }
+        }
+        if (track[i][j] != 8) {
+          if (
+            playerX + 80 >= trackPosition.x &&
+            playerX <= trackPosition.x + 60 &&
+            playerY + 80 <= trackPosition.y &&
+            playerY + 80 >= trackPosition.y - 30
+          ) {
+            onWater = false;
           }
         }
       }
@@ -380,7 +450,7 @@ function game_start() {
     for (let i = 0; i < track.length; i++) {
       for (let j = 0; j < track[i].length; j++) {
         let trackPosition = { x: j * 60, y: i * 60 };
-        if (track[i][j] > 1) {
+        if (track[i][j] === 2 || track[i][j] === 8) {
           if (
             playerX + 80 >= trackPosition.x &&
             playerX <= trackPosition.x + 60 &&
@@ -421,16 +491,6 @@ function game_start() {
   }
   let counter = 0;
   function update() {
-    if (lives <= 0) {
-      document.getElementById("game_status").textContent = "Lose!";
-      lives = 0;
-      document.getElementById("win_display").style.color = "red";
-    }
-    if (score > 9 || lives <= 0) {
-      lives = 0;
-      canva.style.display = "none";
-      win_msg.style.display = "flex";
-    }
     drawPlatform();
     create_diagonal_fireball();
     playerX += xv;
@@ -442,10 +502,16 @@ function game_start() {
       }
     }
     else {
-      if (playerX >= 920) playerX = 919;
+      if (playerX >= window.innerWidth - 200) {
+        playerX = window.innerWidth - 200 - 1;
+      }
     }
     if (playerX <= 110) {
       playerX = 110;
+    }
+    if (playerY >= 479) {
+      playerDead = true;
+      reSpawn();
     }
     playa.position.x = playerX;
     playa.position.y = playerY;
@@ -455,23 +521,22 @@ function game_start() {
     } else yv += calculateGroundLevel(playerX, playerY);
 
     blastBridge(playerX, playerY);
-
+    if (playerY + 100 >= ground) {
+      jumpPlayer = false;
+    }
     drawPlayer();
   }
   function move(event) {
-    if (event.key === "s" || event.key === "ArrowDown") {
-      laying = 1;
-    }
-    if (event.key === "d" || event.key === "ArrowRight") {
-      if (framex < 2) framex++;
-      else framex = 0;
+    if (event.key === "d" && !startMoving) {
+      // console.log("d is pressed");
       startMoving = true;
       facing = 1;
       diagonal_facing = 1;
       xv = 2;
       laying = 0;
+      // console.log("I am pressed");
     }
-    if (event.key === "a" || event.key === "ArrowLeft") {
+    if (event.key === "a" && !startMoving) {
       if (framex < 2) framex++;
       else framex = 0;
       startMoving = true;
@@ -480,58 +545,50 @@ function game_start() {
       xv = -2;
       laying = 0;
     }
-    if (event.key === "w" || event.key === "ArrowUp") {
+    if (event.key === "w") {
       if (flag) {
-        yv -= 15;
+        yv -= 10;
+        jumpPlayer = true;
         flag = false;
       }
       laying = 0;
     }
-  }
-  function move1(event) {
-    if (event.key === "s" || event.key === "ArrowDown") {
+    if (event.key === "s") {
+      startMoving = true;
+      xv = 0;
+      // console.log("s is pressed");
       if (laying == 0) laying = 1;
-      else {
-        laying = 0;
-      }
     }
-    if (event.key === "q" || event.key === "Enter" || event.key == " ") {
+    if (event.key == "q") {
       let fire_audio = new Audio("audios/gun_sound.mp3");
       fire_audio.play();
       shoot();
     }
-
-    if (event.key === "e" || event.key == "/") {
+    if (event.key === "e") {
       let fire_audio = new Audio("audios/gun_sound.mp3");
       fire_audio.play();
       diagonal_fireball_x.push(playerX);
       diagonal_fireball_y.push(playerY);
       diagonal_face_gun.push(diagonal_facing);
     }
-
-    if (event.key === "e" || event.key == "/") {
-      let fire_audio = new Audio("audios/gun_sound.mp3");
-      fire_audio.play();
-      diagonal_fireball_x.push(playerX);
-      diagonal_fireball_y.push(playerY);
-      diagonal_face_gun.push(diagonal_facing);
-    }
-
-
   }
   function stop(event) {
-    if (event.key === "d" || event.key === "ArrowRight") {
+    if (event.key === "d") {
       startMoving = false;
       xv = 0;
     }
-    if (event.key === "a" || event.key === "ArrowLeft") {
+    if (event.key === "a") {
       startMoving = false;
       xv = 0;
+    }
+    if (event.key === "s") {
+      laying = 0;
+      startMoving = false;
     }
   }
   let shootBulletDirection = {
-    right: { dx: 1, dy: 0, sx: 352, sy: 0 },
-    left: { dx: -1, dy: 0, sx: 352, sy: 0 },
+    right: { dx: 2, dy: 0, sx: 352, sy: 0 },
+    left: { dx: -2, dy: 0, sx: 352, sy: 0 },
   };
   function createNewBullet(x, y, { dx, dy, sx, sy }) {
     return new Bullet(x, y, sx, sy, dx, dy);
@@ -569,21 +626,14 @@ function game_start() {
       this.size = { height: 50, width: 50 };
       this.shotBy = shotBy;
       this.drawBullet();
-    }
-    checkOutOfBox() {
-      if (this.position.x > canvas.width) {
-        return true;
-      } else if (this.position.x < 0) {
-        return true;
-      } else if (this.position.y < 0) {
-        return true;
-      } else if (this.position.y > canvas.height) {
-        return true;
-      } else {
-        return false;
+      if (laying) {
+        this.position.y += 55;
       }
     }
     drawBullet() {
+      if (laying == 1) {
+        this.position.y;
+      }
       ctx.drawImage(
         player_image,
         this.bulletSourceImage.sx,
@@ -660,7 +710,7 @@ function game_start() {
     shoot() {
       if (this.counter % 100 === 0) {
         bullets.push(
-          new Bullet(this.position.x, this.position.y, 352, 0, -1, 0, "enemy")
+          new Bullet(this.position.x, this.position.y, 352, 0, -2, 0, "enemy")
         );
       }
       this.counter++;
@@ -683,7 +733,7 @@ function game_start() {
     constructor() {
       enemyInterval = setInterval(() => {
         enemies.push(new Enemy());
-      }, 4000);
+      }, 3500);
     }
     playGame() {
       update();
@@ -694,47 +744,59 @@ function game_start() {
         bullet.updatePosition();
         bullet.drawBullet();
       });
-      bullets = bullets.filter((bulettt) => {
-        enemies = enemies.filter((enemy) => {
-          if (checkBulletCollision(bulettt, enemy)) {
-            score++;
-            document.querySelector('.scoreUpdate').textContent = score;
-            return null;
-          } else {
-            return enemy;
-          }
-        });
-        if (checkBulletCollision(bulettt, playa)) {
-          playerDead = true;
-          if (delayInReSpawn % 5 === 0) {
-            document.getElementById("livesUpdate").textContent = lives;
-            lives--;
-            // document.querySelector('.scoreUpdate').textContent = score;
-            if (lives > 0) {
-              playerX = 0;
-              playerY = 0;
-              playa.position.x = playerX;
-              playa.position.y = playerY;
-              playerDead = false;
-              blastPlayer = true;
+      if (reSpawnCounter > 200) {
+        bullets = bullets.filter((bulettt) => {
+          enemies = enemies.filter((enemy) => {
+            if (checkBulletCollision(bulettt, enemy)) {
+              score++;
+              document.getElementById("scoreUpdate").textContent = score;
+              // console.log(score);
+              return null;
             } else {
-              clearInterval(enemyInterval);
+              return enemy;
             }
+          });
+          if (checkBulletCollision(bulettt, playa)) {
+            // console.log("hello");
+            playerDead = true;
+            reSpawn();
           }
-        }
-        return bulettt;
-      });
+          return bulettt;
+        });
+      }
+      reSpawnCounter++;
       delayInReSpawn++;
+      console.log(delayInReSpawn);
+    }
+  }
+  function reSpawn() {
+    if (delayInReSpawn % 3 === 0) {
+      lives--;
+      document.getElementById("livesUpdate").textContent = lives;
+      if (lives > 0) {
+        playerX = 0;
+        playerY = 0;
+        playa.position.x = playerX;
+        playa.position.y = playerY;
+        playerDead = false;
+        blastPlayer = true;
+        reSpawnCounter = 0;
+      } else {
+        // console.log("GAMEOVER");
+        clearInterval(enemyInterval);
+      }
     }
   }
   function checkBulletCollision(bullet, target) {
     if (target.id == "playa") {
+      // console.log(target.position.x);
     }
     if (bullet.shotBy != target.id) {
       let x1 = bullet.position.x;
       let y1 = bullet.position.y;
       let w1 = bullet.size.width;
       let h1 = bullet.size.height;
+
       let x2 = target.position.x;
       let y2 = target.position.y;
       let h2 = target.size.height;
@@ -755,18 +817,31 @@ function game_start() {
   }
 
   addEventListener("keydown", move);
-  addEventListener("keyup", move1);
   addEventListener("keyup", stop);
 
   function startgame() {
     let gg = new Game();
     function animation() {
-      requestAnimationFrame(animation);
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      gg.playGame();
+      // console.log(playerY);
+      if (score < 5 && lives > 0) {
+        requestAnimationFrame(animation);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        gg.playGame();
+      }
+      else {
+        if (score >= 5) {
+          canva.style.display = "none";
+          document.getElementById("win_message").style.display = "flex";
+        }
+        if (lives <= 0) {
+          canva.style.display = "none";
+          document.getElementById("win_message").style.display = "flex";
+          document.getElementById("win_message").style.color = "red";
+          document.getElementById("game_status").textContent = "Lose";
+        }
+      }
     }
     animation();
   }
   startgame();
 }
-
