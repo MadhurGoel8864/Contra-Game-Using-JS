@@ -26,9 +26,10 @@ function change_image() {
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
-canvas.width = 1024;
+canvas.width = innerWidth;
 canvas.height = 576;
 let enemyInterval;
+let onWater = false;
 let score = 0;
 let ex = 700;
 let movingLeft = true;
@@ -154,8 +155,8 @@ track = [
   ],
   [
     9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9,
-    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 9, 9, 9, 9, 9, 2, 2, 2,
-    2, 9, 9, 9, 9, 9, 9, 9,
+    9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 2, 2, 2, 9, 9, 9, 9, 9, 9, 9, 9,
+    9, 9, 9, 9, 9, 9, 9, 9,
   ],
   [
     9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 8, 8, 8, 8, 8, 8, 9, 2, 2, 2, 9, 9, 9,
@@ -293,6 +294,8 @@ let player = {
   running: { sx: 0, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 },
   runningReverse: { sx: 397, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 },
   jump: { sx: 116, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 4 },
+  water: { sx: 86, sy: 280, sh: 36, sw: 19, dh: 80, dw: 50, cols: 1 },
+  reverseWater: { sx: 311, sy: 280, sh: 36, sw: 19, dh: 80, dw: 50, cols: 1 },
 };
 function drawPlayer() {
   if (!playerDead) {
@@ -316,6 +319,30 @@ function drawPlayer() {
         50
       );
       playerCounter++;
+    } else if (onWater && facing == 1) {
+      ctx.drawImage(
+        player_image,
+        player.water.sx,
+        player.water.sy,
+        player.water.sw,
+        player.water.sh,
+        playerX,
+        playerY,
+        80,
+        100
+      );
+    } else if (onWater && facing == 0) {
+      ctx.drawImage(
+        reverseEnemy,
+        player.reverseWater.sx,
+        player.reverseWater.sy,
+        player.reverseWater.sw,
+        player.reverseWater.sh,
+        playerX,
+        playerY,
+        80,
+        100
+      );
     } else if (laying == 1 && facing == 1 && !jumpPlayer) {
       ctx.drawImage(laying_img, playerX, playerY + 60, 100, 50);
     } else if (laying == 1 && facing == 0 && !jumpPlayer) {
@@ -386,8 +413,27 @@ function blastBridge(playerX, playerY) {
           playerY + 80 >= trackPosition.y - 30
         ) {
           track[i][j] = 0;
-          onWater = true;
           ctx.drawImage(blastImage, trackPosition.x, trackPosition.y, 50, 50);
+        }
+      }
+      if (track[i][j] === 8) {
+        if (
+          playerX + 80 >= trackPosition.x &&
+          playerX <= trackPosition.x + 60 &&
+          playerY + 80 <= trackPosition.y &&
+          playerY + 80 >= trackPosition.y - 30
+        ) {
+          onWater = true;
+        }
+      }
+      if (track[i][j] != 8) {
+        if (
+          playerX + 80 >= trackPosition.x &&
+          playerX <= trackPosition.x + 60 &&
+          playerY + 80 <= trackPosition.y &&
+          playerY + 80 >= trackPosition.y - 30
+        ) {
+          onWater = false;
         }
       }
     }
@@ -450,12 +496,12 @@ function update() {
       moveForward();
     }
   } else {
-    if (playerX >= 920) {
-      playerX = 920;
+    if (playerX >= 1260) {
+      playerX = 1260;
     }
   }
-  if (playerX <= 110) {
-    playerX = 110;
+  if (playerX <= 0) {
+    playerX = 0;
   }
   if (playerY >= 479) {
     playerDead = true;
@@ -576,11 +622,11 @@ class Bullet {
     if (laying) {
       this.position.y += 55;
     }
+    if (onWater) {
+      this.position.y += 45;
+    }
   }
   drawBullet() {
-    if (laying == 1) {
-      this.position.y;
-    }
     ctx.drawImage(
       player_image,
       this.bulletSourceImage.sx,
@@ -615,7 +661,7 @@ let cnnt = 0;
 class Enemy {
   constructor() {
     this.counter = 0;
-    this.position = { x: 920, y: 0 };
+    this.position = { x: 1260, y: 0 };
     this.size = { height: 80, width: 50 };
     this.velocity = { x: -3, y: 0 };
     this.baseLevel = canvas.height;
