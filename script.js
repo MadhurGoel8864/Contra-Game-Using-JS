@@ -406,12 +406,7 @@ function blastBridge(playerX, playerY) {
     for (let j = 0; j < track[i].length; j++) {
       let trackPosition = { x: j * 60 - shiftTrack, y: i * 60 };
       if (track[i][j] === 3 || track[i][j] === 4 || track[i][j] === 5) {
-        if (
-          playerX + 80 >= trackPosition.x &&
-          playerX <= trackPosition.x + 60 &&
-          playerY + 80 <= trackPosition.y &&
-          playerY + 80 >= trackPosition.y - 30
-        ) {
+        if (playerX >= trackPosition.x) {
           track[i][j] = 0;
           ctx.drawImage(blastImage, trackPosition.x, trackPosition.y, 50, 50);
         }
