@@ -587,8 +587,8 @@ function game_start() {
     }
   }
   let shootBulletDirection = {
-    right: { dx: 1, dy: 0, sx: 352, sy: 0 },
-    left: { dx: -1, dy: 0, sx: 352, sy: 0 },
+    right: { dx: 2, dy: 0, sx: 352, sy: 0 },
+    left: { dx: -2, dy: 0, sx: 352, sy: 0 },
   };
   function createNewBullet(x, y, { dx, dy, sx, sy }) {
     return new Bullet(x, y, sx, sy, dx, dy);
@@ -710,7 +710,7 @@ function game_start() {
     shoot() {
       if (this.counter % 100 === 0) {
         bullets.push(
-          new Bullet(this.position.x, this.position.y, 352, 0, -1, 0, "enemy")
+          new Bullet(this.position.x, this.position.y, 352, 0, -2, 0, "enemy")
         );
       }
       this.counter++;
@@ -733,7 +733,7 @@ function game_start() {
     constructor() {
       enemyInterval = setInterval(() => {
         enemies.push(new Enemy());
-      }, 5500);
+      }, 3500);
     }
     playGame() {
       update();
