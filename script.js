@@ -99,6 +99,7 @@ let enemyFireBally = [];
 let enemyFaceGun = [];
 let face_gun = [];
 let diagonal_face_gun = [];
+let reSpawnCounter = 0;
 let enemyX = 820;
 let enemyY = 0;
 let bridgeDissapear = false;
@@ -690,23 +691,26 @@ class Game {
       bullet.updatePosition();
       bullet.drawBullet();
     });
-    bullets = bullets.filter((bulettt) => {
-      enemies = enemies.filter((enemy) => {
-        if (checkBulletCollision(bulettt, enemy)) {
-          score++;
-          console.log(score);
-          return null;
-        } else {
-          return enemy;
+    if (reSpawnCounter > 200) {
+      bullets = bullets.filter((bulettt) => {
+        enemies = enemies.filter((enemy) => {
+          if (checkBulletCollision(bulettt, enemy)) {
+            score++;
+            console.log(score);
+            return null;
+          } else {
+            return enemy;
+          }
+        });
+        if (checkBulletCollision(bulettt, playa)) {
+          console.log("hello");
+          playerDead = true;
+          reSpawn();
         }
+        return bulettt;
       });
-      if (checkBulletCollision(bulettt, playa)) {
-        console.log("hello");
-        playerDead = true;
-        reSpawn();
-      }
-      return bulettt;
-    });
+    }
+    reSpawnCounter++;
     delayInReSpawn++;
   }
 }
@@ -720,6 +724,7 @@ function reSpawn() {
       playa.position.y = playerY;
       playerDead = false;
       blastPlayer = true;
+      reSpawnCounter = 0;
     } else {
       console.log("GAMEOVER");
       clearInterval(enemyInterval);
