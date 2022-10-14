@@ -37,27 +37,27 @@ function game_start() {
   canvas.height = 576;
   let enemyInterval;
   let score = 0;
-  // let ex = 700;
-  // let movingLeft = true;
-  // let ex1 = 1500;
-  // let ex2 = 1100;
-  // let ey = canvas.height / 2 - 10;
+  let ex = 700;
+  let movingLeft = true;
+  let ex1 = 1500;
+  let ex2 = 1100;
+  let ey = canvas.height / 2 - 10;
   let playerX = 100;
   let playerY = 0;
   let xv = 0;
   let yv = 0;
-  // let platX = 0;
-  // let platY = 100;
+  let platX = 0;
+  let platY = 100;
   let flag = true;
   let ground = canvas.height;
   let laying = 0;
-  // let enemyXVelo = 0;
-  // let enemyYVelo = 0;
+  let enemyXVelo = 0;
+  let enemyYVelo = 0;
   let enemies = [];
   let lives = 5;
   let jumpPlayer = false;
-  // const backHeight = window.innerHeight;
-  // const backWidth = window.innerWidth;
+  const backHeight = window.innerHeight;
+  const backWidth = window.innerWidth;
   shiftTrack = 0;
   shiftTrackBy = 2;
   let playa = {
@@ -85,30 +85,31 @@ function game_start() {
   reverseEnemy.src = "img/playerreverse.png";
   const blastImage = new Image();
   blastImage.src = "img/blastimage.png";
-  // const player_sprite_width = 25;
-  // const player_sprite_height = 35;
-  // const reversed_player_sprite_width = 26;
-  // const reversed_player_sprite_height = 35;
-  // let a = 0;
-  // let b = 0;
+  const player_sprite_width = 25;
+  const player_sprite_height = 35;
+  const reversed_player_sprite_width = 26;
+  const reversed_player_sprite_height = 35;
+  let a = 0;
+  let b = 0;
   let framex = 0;
-  // let framey = 0;
+  let framey = 0;
   let facing = 1;
   let diagonal_facing = 1;
-  // let rotate_angle = 180;
-  // let cnt = 0;
-  // let fireball_x = [];
-  // let fireball_y = [];
+  let rotate_angle = 180;
+  let cnt = 0;
+  let fireball_x = [];
+  let fireball_y = [];
   let diagonal_fireball_x = [];
   let diagonal_fireball_y = [];
-  // let enemyFireBallx = [];
-  // let enemyFireBally = [];
-  // let enemyFaceGun = [];
-  // let face_gun = [];
+  let enemyFireBallx = [];
+  let enemyFireBally = [];
+  let enemyFaceGun = [];
+  let face_gun = [];
   let diagonal_face_gun = [];
+  let reSpawnCounter = 0;
   let enemyX = 820;
   let enemyY = 0;
-  // let bridgeDissapear = false;
+  let bridgeDissapear = false;
   let trackImage = {
     road: { sx: 100, sy: 100, sw: 60, sh: 60 },
     grass: { sx: 100, sy: 65, sw: 70, sh: 30 },
@@ -299,12 +300,14 @@ function game_start() {
     running: { sx: 0, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 },
     runningReverse: { sx: 397, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 },
     jump: { sx: 116, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 4 },
+    water: { sx: 86, sy: 280, sh: 36, sw: 19, dh: 80, dw: 50, cols: 1 },
+    reverseWater: { sx: 311, sy: 280, sh: 36, sw: 19, dh: 80, dw: 50, cols: 1 },
   };
   function drawPlayer() {
     if (!playerDead) {
       if (jumpPlayer) {
         console.log("heelo");
-        if (playerCounter % 5 === 0) {
+        if (playerCounter % 10 === 0) {
           shiftJump += player.jump.sw;
           if (shiftJump >= player.jump.sw * player.jump.cols) {
             shiftJump = 0;
@@ -322,6 +325,30 @@ function game_start() {
           50
         );
         playerCounter++;
+      } else if (onWater && facing == 1) {
+        ctx.drawImage(
+          player_image,
+          player.water.sx,
+          player.water.sy,
+          player.water.sw,
+          player.water.sh,
+          playerX,
+          playerY,
+          80,
+          100
+        );
+      } else if (onWater && facing == 0) {
+        ctx.drawImage(
+          reverseEnemy,
+          player.reverseWater.sx,
+          player.reverseWater.sy,
+          player.reverseWater.sw,
+          player.reverseWater.sh,
+          playerX,
+          playerY,
+          80,
+          100
+        );
       } else if (laying == 1 && facing == 1 && !jumpPlayer) {
         ctx.drawImage(laying_img, playerX, playerY + 60, 100, 50);
       } else if (laying == 1 && facing == 0 && !jumpPlayer) {
@@ -392,14 +419,32 @@ function game_start() {
             playerY + 80 >= trackPosition.y - 30
           ) {
             track[i][j] = 0;
-            onWater = true;
             ctx.drawImage(blastImage, trackPosition.x, trackPosition.y, 50, 50);
+          }
+        }
+        if (track[i][j] === 8) {
+          if (
+            playerX + 80 >= trackPosition.x &&
+            playerX <= trackPosition.x + 60 &&
+            playerY + 80 <= trackPosition.y &&
+            playerY + 80 >= trackPosition.y - 30
+          ) {
+            onWater = true;
+          }
+        }
+        if (track[i][j] != 8) {
+          if (
+            playerX + 80 >= trackPosition.x &&
+            playerX <= trackPosition.x + 60 &&
+            playerY + 80 <= trackPosition.y &&
+            playerY + 80 >= trackPosition.y - 30
+          ) {
+            onWater = false;
           }
         }
       }
     }
   }
-
   function calculateGroundLevel(playerX, playerY) {
     let flag22 = false;
     for (let i = 0; i < track.length; i++) {
@@ -444,7 +489,7 @@ function game_start() {
       }
     }
   }
-  // let counter = 0;
+  let counter = 0;
   function update() {
     drawPlatform();
     create_diagonal_fireball();
@@ -483,13 +528,13 @@ function game_start() {
   }
   function move(event) {
     if (event.key === "d" && !startMoving) {
-      console.log("d is pressed");
+      // console.log("d is pressed");
       startMoving = true;
       facing = 1;
       diagonal_facing = 1;
       xv = 2;
       laying = 0;
-      console.log("I am pressed");
+      // console.log("I am pressed");
     }
     if (event.key === "a" && !startMoving) {
       if (framex < 2) framex++;
@@ -511,7 +556,7 @@ function game_start() {
     if (event.key === "s") {
       startMoving = true;
       xv = 0;
-      console.log("s is pressed");
+      // console.log("s is pressed");
       if (laying == 0) laying = 1;
     }
     if (event.key == "q") {
@@ -618,8 +663,8 @@ function game_start() {
     dw: 50,
     cols: 5,
   };
-  // let enemyReverse = { sx: 228, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 };
-  // let cnnt = 0;
+  let enemyReverse = { sx: 228, sy: 43, sh: 36, sw: 19, dh: 80, dw: 50, cols: 5 };
+  let cnnt = 0;
   class Enemy {
     constructor() {
       this.counter = 0;
@@ -699,25 +744,29 @@ function game_start() {
         bullet.updatePosition();
         bullet.drawBullet();
       });
-      bullets = bullets.filter((bulettt) => {
-        enemies = enemies.filter((enemy) => {
-          if (checkBulletCollision(bulettt, enemy)) {
-            score++;
-            document.getElementById("scoreUpdate").textContent = score;
-            console.log(score);
-            return null;
-          } else {
-            return enemy;
+      if (reSpawnCounter > 200) {
+        bullets = bullets.filter((bulettt) => {
+          enemies = enemies.filter((enemy) => {
+            if (checkBulletCollision(bulettt, enemy)) {
+              score++;
+              document.getElementById("scoreUpdate").textContent = score;
+              // console.log(score);
+              return null;
+            } else {
+              return enemy;
+            }
+          });
+          if (checkBulletCollision(bulettt, playa)) {
+            // console.log("hello");
+            playerDead = true;
+            reSpawn();
           }
+          return bulettt;
         });
-        if (checkBulletCollision(bulettt, playa)) {
-          console.log("hello");
-          playerDead = true;
-          reSpawn();
-        }
-        return bulettt;
-      });
+      }
+      reSpawnCounter++;
       delayInReSpawn++;
+      console.log(delayInReSpawn);
     }
   }
   function reSpawn() {
@@ -731,15 +780,16 @@ function game_start() {
         playa.position.y = playerY;
         playerDead = false;
         blastPlayer = true;
+        reSpawnCounter = 0;
       } else {
-        console.log("GAMEOVER");
+        // console.log("GAMEOVER");
         clearInterval(enemyInterval);
       }
     }
   }
   function checkBulletCollision(bullet, target) {
     if (target.id == "playa") {
-      console.log(target.position.x);
+      // console.log(target.position.x);
     }
     if (bullet.shotBy != target.id) {
       let x1 = bullet.position.x;
@@ -772,7 +822,7 @@ function game_start() {
   function startgame() {
     let gg = new Game();
     function animation() {
-      console.log(playerY);
+      // console.log(playerY);
       if (score < 5 && lives > 0) {
         requestAnimationFrame(animation);
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -795,4 +845,3 @@ function game_start() {
   }
   startgame();
 }
-
