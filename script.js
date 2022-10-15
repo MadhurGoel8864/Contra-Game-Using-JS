@@ -556,6 +556,8 @@ function game_start() {
       // console.log("s is pressed");
       if (laying == 0) laying = 1;
     }
+  }
+  function move1(event) {
     if (event.key == "q") {
       let fire_audio = new Audio("audios/gun_sound.mp3");
       fire_audio.play();
@@ -568,6 +570,7 @@ function game_start() {
       diagonal_fireball_y.push(playerY);
       diagonal_face_gun.push(diagonal_facing);
     }
+
   }
   function stop(event) {
     if (event.key === "d") {
@@ -815,6 +818,7 @@ function game_start() {
 
   addEventListener("keydown", move);
   addEventListener("keyup", stop);
+  addEventListener("keyup", move1);
 
   function startgame() {
     let gg = new Game();
