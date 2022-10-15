@@ -36,6 +36,7 @@ function game_start() {
   canvas.width = window.innerWidth;
   canvas.height = 576;
   let enemyInterval;
+  let onWater = false;
   let score = 0;
   let ex = 700;
   let movingLeft = true;
@@ -412,12 +413,7 @@ function game_start() {
       for (let j = 0; j < track[i].length; j++) {
         let trackPosition = { x: j * 60 - shiftTrack, y: i * 60 };
         if (track[i][j] === 3 || track[i][j] === 4 || track[i][j] === 5) {
-          if (
-            playerX + 80 >= trackPosition.x &&
-            playerX <= trackPosition.x + 60 &&
-            playerY + 80 <= trackPosition.y &&
-            playerY + 80 >= trackPosition.y - 30
-          ) {
+          if (playerX >= trackPosition.x) {
             track[i][j] = 0;
             ctx.drawImage(blastImage, trackPosition.x, trackPosition.y, 50, 50);
           }
@@ -445,6 +441,7 @@ function game_start() {
       }
     }
   }
+
   function calculateGroundLevel(playerX, playerY) {
     let flag22 = false;
     for (let i = 0; i < track.length; i++) {
@@ -668,7 +665,7 @@ function game_start() {
   class Enemy {
     constructor() {
       this.counter = 0;
-      this.position = { x: 920, y: 0 };
+      this.position = { x: window.innerWidth - 300, y: 0 };
       this.size = { height: 80, width: 50 };
       this.velocity = { x: -3, y: 0 };
       this.baseLevel = canvas.height;
